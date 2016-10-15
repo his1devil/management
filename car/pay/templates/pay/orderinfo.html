@@ -1,0 +1,520 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>人信科技车管家销售管理系统</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<!-- basic styles -->
+		<link href="{% static 'pay/css/bootstrap.min.css' %}" rel="stylesheet" />
+		<link rel="stylesheet" href="{% static 'pay/css/font-awesome.min.css' %}" />
+		<!--[if IE 7]>
+		  <link rel="stylesheet" href="assets/css/font-awesome-ie7.min.css" />
+		<![endif]-->
+
+		<!-- page specific plugin styles -->
+
+		<!-- ace styles -->
+
+		<link rel="stylesheet" href="{% static 'pay/css/ace.min.css' %}" />
+		<link rel="stylesheet" href="{% static 'pay/css/ace-rtl.min.css' %}" />
+		<link rel="stylesheet" href="{% static 'pay/css/ace-skins.min.css' %}" />
+		<link rel="stylesheet" href="{% static 'pay/css/daterangepicker.css' %}" />
+
+
+		<!--[if lte IE 8]>
+		  <link rel="stylesheet" href="assets/css/ace-ie.min.css" />
+		<![endif]-->
+
+		<!-- inline styles related to this page -->
+
+		<!-- ace settings handler -->
+
+		<script src="{% static 'pay/js/ace-extra.min.js' %}"></script>
+		<script src="{% static 'pay/js/jquery-2.0.3.min.js' %}"></script>
+
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+
+		<!--[if lt IE 9]>
+		<script src="assets/js/html5shiv.js"></script>
+		<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+		<style type="text/css">
+			.linkedinput {margin-right:0.3em;}
+			.needed {color:red;}
+		</style>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				
+				$("#verify").click(function(e) {
+					e.preventDefault();
+					var sentnumber = $("input#sentnumber").val();
+					var sentdate = $("input#sentdate").val();
+					var expresscompany = $("input#expresscompany").val();
+					var express = $("input#express").val();
+					var onumber = $("input#onumber").val();
+					var deliverman = $("input#deliverman").val();
+
+					if (sentnumber == '' || sentdate == '' || expresscompany == '' || express == '' || deliverman == '') {
+						alert("必填项不能为空，请检查 !");
+						return false;
+					} else {
+						$.ajax({
+							type: "POST",
+							url: "/verify_smt/",
+							data: {
+								sentnumber: sentnumber,
+								sentdate: sentdate,
+								expresscompany: expresscompany,
+								express: express,
+								onumber: onumber,
+								deliverman: deliverman,
+							},
+							dataType: "json",
+							success:function(msg) {
+								if (msg.msg == "ok") {
+									alert("审核发货成功!");
+									window.location.href="/order_verify";
+								} else {
+									alert("审核发货失败，请重试！");
+									return false;
+								}
+							}
+
+						})
+					}
+
+				})
+			})
+		</script>
+
+	</head>
+
+	<body>
+		<div class="navbar navbar-default" id="navbar">
+			<script type="text/javascript">
+				try{ace.settings.check('navbar' , 'fixed')}catch(e){}
+			</script>
+
+			<div class="navbar-container" id="navbar-container">
+				<div class="navbar-header pull-left">
+					<a href="#" class="navbar-brand">
+						<small>
+							人信科技车管家销售管理系统
+						</small>
+					</a><!-- /.brand -->
+				</div><!-- /.navbar-header -->
+
+				<div class="navbar-header pull-right" role="navigation">
+					<ul class="nav ace-nav">
+
+						<li class="light-blue">
+							<a data-toggle="dropdown" href="#" class="dropdown-toggle">
+								<span class="user-info">
+									<small>欢迎登录</small>
+									{{username}}
+								</span>
+
+								<i class="icon-caret-down"></i>
+							</a>
+
+							<ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+
+								<li>
+									<a href="/change_pw/">
+										<i class="icon-block"></i>
+										修改密码
+									</a>
+								</li>
+
+								<li class="divider"></li>
+
+								<li>
+									<a href="/logout/">
+										<i class="icon-off"></i>
+										退出
+									</a>
+								</li>
+							</ul>
+						</li>
+					</ul><!-- /.ace-nav -->
+				</div><!-- /.navbar-header -->
+			</div><!-- /.container -->
+		</div>
+
+		<div class="main-container" id="main-container">
+
+			<div class="main-container-inner">
+
+				<div class="sidebar" id="sidebar">
+					<ul class="nav nav-list">
+
+
+						<li class="active open">
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-envelope"></i>
+								<span class="menu-text"> 订单管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+						<ul class="submenu">
+								<li>
+									<a href="/order/">
+										<i class="icon-double-angle-right"></i>
+										订单信息管理
+									</a>
+								</li>
+								{% if role == 'admin' %}
+								<li class="active">
+									<a href="/order_verify/">
+										<i class="icon-double-angle-right"></i>
+										订单审核
+									</a>
+								</li>
+								{% endif %}
+
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-desktop"></i>
+								<span class="menu-text"> 入库管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="/ware_confirm/">
+										<i class="icon-double-angle-right"></i>
+										订单入库确认管理
+									</a>
+								</li>
+
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-credit-card"></i>
+								<span class="menu-text"> 销售管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+
+								<li>
+									<a href="/sale/">
+										<i class="icon-double-angle-right"></i>
+										销售信息管理
+									</a>
+								</li>
+
+								<li>
+									<a href="/order_check/">
+										<i class="icon-double-angle-right"></i>
+										销售单审核
+									</a>
+								</li>
+								<li>
+									<a href="/sale_assis/">
+										<i class="icon-double-angle-right"></i>
+										销售顾问管理
+									</a>
+								</li>
+								<li>
+									<a href="/care_number/">
+										<i class="icon-double-angle-right"></i>
+										大保单号管理
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-group"></i>
+								<span class="menu-text"> 用户管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="/users/">
+										<i class="icon-double-angle-right"></i>
+										添加用户
+									</a>
+								</li>
+								{% if role == 'admin' %}
+								<li>
+									<a href="/user_manage/">
+										<i class="icon-double-angle-right"></i>
+										用户管理
+									</a>
+								</li>
+								{% endif %}
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-lock"></i>
+								<span class="menu-text"> 修改密码 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="/change_pw/">
+										<i class="icon-double-angle-right"></i>
+										修改密码
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="/logout/">
+								<i class="icon-off"></i>
+								<span class="menu-text"> 退出系统 </span>
+							</a>
+						</li>
+					</ul><!-- /.nav-list -->
+
+				
+				</div>
+
+				<div class="main-content">
+					<div class="breadcrumbs" id="breadcrumbs">
+						<script type="text/javascript">
+							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+						</script>
+
+						<ul class="breadcrumb">
+							<li>
+								<i class="icon-home home-icon"></i>
+								<a href="#">首页</a>
+							</li>
+							<li class="active">订单信息管理</li>
+						</ul><!-- .breadcrumb -->
+
+					</div>
+
+					<div class="page-content">
+
+					<div class="page-header">
+							<h4>
+								#
+								<small>
+									订单信息审核
+								</small>
+							</h4>
+						</div>
+
+						<div class="row">
+
+					<div class="col-xs-12">
+											
+                  <table id="user_selected" class="table table-striped table-bordered table-hover" style="margin-top:1em;">
+                
+                  <thead>
+                    <tr id="taghead">
+                      <th>订单单号</th>
+                      <th>订单单位</th>
+                      <th>订单客户</th>
+                      <th>客户电话</th>
+                      <th>发货仓库</th>
+                      <th>运输方式</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                  	<td>{{ order.onumber }}</td>
+                  	<td>{{ order.company }}</td>
+                  	<td>{{ order.client }}</td>
+                  	<td>{{ order.mobile }}</td>
+                  	<td>{{ order.repos}}</td>
+                  	
+                  	{% if order.transport == 'land' %}
+                  	<td>陆运</td>
+                  	{% elif order.transport == 'air' %}
+                  	<td>空运</td>
+                  	{% endif %}
+                  </tr>
+				<thead>
+                    <tr id="taghead">
+                      <th>订单货物</th>
+                      <th>订单来源</th>
+                      <th>订单时间</th>
+                      <th>订单申请人</th>
+                      <th>订单申请地区</th>
+                      <th>订单备注</th>
+                    </tr>
+                  </thead>
+                  <tr>
+                  	<td>{{ order.orderinfo }}</td>
+                  	{% if order.source == 'new' %}
+                  	<td>新增订单</td>
+                  	{% elif order.source == 'empty' %}
+                  	<td>空转订单</td>
+                  	{% endif %}
+                  	<td>{{ order.pubtime|date:"Y-m-d" }}</td>
+                  	<td>{{ order.applicant.username }}</td>
+                  	<td>{{ area }}</td>
+                  	<td>{{ order.note}}</td>
+                  </tr>
+
+                  </tbody>
+                  </table>
+				</div><!-- /.table-responsive -->
+
+									</div>
+
+						<div class="row">
+								<!-- PAGE CONTENT BEGINS -->
+							<form class="form-horizontal" role="form" method="post" action="#">
+								{% csrf_token %}
+								<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* 号标注为必填项</span></label>
+								</div>
+
+								<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* </span>发货单号</label>
+										<div class="col-sm-9">
+											<input type="text" name="sentnumber" id="sentnumber" class="col-xs-5">
+											<input type="text" name="onumber" id="onumber" value="{{ order.onumber }}" style="display:none;">
+										</div>
+								</div>
+
+								<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* </span>发货人姓名</label>
+										<div class="col-sm-9">
+											<input type="text" name="deliverman" id="deliverman"  class="col-xs-5">
+					
+										</div>
+								</div>
+
+								<div class="form-group">
+
+								<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* </span>发货日期</label>
+									<div class="col-sm-9">
+										<input class="date-picker" id="sentdate" type="text" data-date-format="yyyy-mm-dd" name="sentdate" placeholder="点击选择日期">
+					              <span>
+					              	<i class="icon-calendar bigger-110"></i>
+					              </span>
+										</div>
+
+								</div>
+
+								<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* </span>物流公司</label>
+										<div class="col-sm-9">
+											<input type="text" name="expresscompany" id="expresscompany"  class="col-xs-5">
+					
+										</div>
+								</div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* </span>快递单号</label>
+										<div class="col-sm-9">
+											<input type="text" name="express" id="express"  class="col-xs-5">
+					
+										</div>
+								</div>
+									<div class="space-4"></div>	
+
+						<div class="row">
+								<div class="form-group">	
+										<label class="col-sm-3 control-label" for="form-field-1"></label>
+										<label class="col-sm-2 control-label" for="form-field-1">
+											<button type="button" id="verify" class="btn btn-info btn-block">审核发货</button>
+										</label>
+								
+									</div>
+						</div>
+
+							</form>
+							</div>
+						</div>
+
+						</div><!-- /row -->
+
+								<!-- PAGE CONTENT ENDS -->
+
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+
+					</div><!-- /.page-content -->
+				</div><!-- /.main-content -->
+
+			</div><!-- /.main-container-inner -->
+		</div><!-- /.main-container -->
+
+		<!-- basic scripts -->
+
+		<!--[if !IE]> -->
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<![endif]-->
+
+		<!--[if !IE]> -->
+
+		<script type="text/javascript">
+			window.jQuery || document.write("<script src='{% static 'pay/js/jquery-2.0.3.min.js' %}'>"+"<"+"script>");
+		</script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script type="text/javascript">
+ window.jQuery || document.write("<script src='assets/js/jquery-1.10.2.min.js'>"+"<"+"script>");
+</script>
+<![endif]-->
+
+		<script type="text/javascript">
+			if("ontouchend" in document) document.write("<script src='{% static 'pay/js/jquery.mobile.custom.min.js' %}'>"+"<"+"script>");
+		</script>
+		<script src="{% static 'pay/js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'pay/js/typeahead-bs2.min.js' %}"></script>
+
+		<!-- page specific plugin scripts -->
+
+		<!--[if lte IE 8]>
+		  <script src="assets/js/excanvas.min.js"></script>
+		<![endif]-->
+
+		<script src="{% static 'pay/js/jquery-ui-1.10.3.custom.min.js' %}"></script>
+		<script src="{% static 'pay/js/jquery.ui.touch-punch.min.js' %}"></script>
+		<script src="{% static 'pay/js/jquery.slimscroll.min.js' %}"></script>
+		<script src="{% static 'pay/js/flot/jquery.flot.min.js' %}"></script>
+		<script src="{% static 'pay/js/flot/jquery.flot.pie.min.js' %}"></script>
+		<script src="{% static 'pay/js/flot/jquery.flot.resize.min.js' %}"></script>
+		<script src="{% static 'pay/js/date-time/daterangepicker.min.js' %}"></script>
+		<script src="{% static 'pay/js/date-time/bootstrap-timepicker.min.js' %}"></script>
+		<script src="{% static 'pay/js/date-time/moment.min.js' %}"></script>
+		<script src="{% static 'pay/js/date-time/bootstrap-datepicker.min.js' %}"></script>
+
+
+		<!-- ace scripts -->
+
+		<script src="{% static 'pay/js/ace-elements.min.js' %}"></script>
+		<script src="{% static 'pay/js/ace.min.js' %}"></script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+					$('.date-picker').datepicker({autoclose:true}).next().on(ace.click_event, function(){
+					$(this).prev().focus();
+				});
+
+
+			})
+		</script>
+
+</html>
+

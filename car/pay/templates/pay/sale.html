@@ -1,0 +1,557 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>人信科技车管家销售管理系统</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<!-- basic styles -->
+		<link href="{% static 'pay/css/bootstrap.min.css' %}" rel="stylesheet" />
+		<link rel="stylesheet" href="{% static 'pay/css/font-awesome.min.css' %}" />
+		<!--[if IE 7]>
+		  <link rel="stylesheet" href="assets/css/font-awesome-ie7.min.css" />
+		<![endif]-->
+
+		<!-- page specific plugin styles -->
+
+		<!-- ace styles -->
+
+		<link rel="stylesheet" href="{% static 'pay/css/ace.min.css' %}" />
+		<link rel="stylesheet" href="{% static 'pay/css/ace-rtl.min.css' %}" />
+		<link rel="stylesheet" href="{% static 'pay/css/ace-skins.min.css' %}" />
+		<link rel="stylesheet" href="{% static 'pay/css/daterangepicker.css' %}" />
+
+
+		<!--[if lte IE 8]>
+		  <link rel="stylesheet" href="assets/css/ace-ie.min.css" />
+		<![endif]-->
+
+		<!-- inline styles related to this page -->
+
+		<!-- ace settings handler -->
+
+		<script src="{% static 'pay/js/ace-extra.min.js' %}"></script>
+		<script src="{% static 'pay/js/jquery-2.0.3.min.js' %}"></script>
+
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+
+		<!--[if lt IE 9]>
+		<script src="assets/js/html5shiv.js"></script>
+		<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+		<style type="text/css">
+			.linkedinput {margin-right:0.3em;}
+			.needed {color:red;}
+		</style>
+
+	</head>
+
+	<body>
+		<div class="navbar navbar-default" id="navbar">
+			<script type="text/javascript">
+				try{ace.settings.check('navbar' , 'fixed')}catch(e){}
+			</script>
+
+			<div class="navbar-container" id="navbar-container">
+				<div class="navbar-header pull-left">
+					<a href="#" class="navbar-brand">
+						<small>
+							人信科技车管家销售管理系统
+						</small>
+					</a><!-- /.brand -->
+				</div><!-- /.navbar-header -->
+
+				<div class="navbar-header pull-right" role="navigation">
+					<ul class="nav ace-nav">
+
+						<li class="light-blue">
+							<a data-toggle="dropdown" href="#" class="dropdown-toggle">
+								<span class="user-info">
+									<small>欢迎登录</small>
+									{{username}}
+								</span>
+
+								<i class="icon-caret-down"></i>
+							</a>
+
+							<ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+
+								<li>
+									<a href="/change_pw/">
+										<i class="icon-block"></i>
+										修改密码
+									</a>
+								</li>
+
+								<li class="divider"></li>
+
+								<li>
+									<a href="/logout/">
+										<i class="icon-off"></i>
+										退出
+									</a>
+								</li>
+							</ul>
+						</li>
+					</ul><!-- /.ace-nav -->
+				</div><!-- /.navbar-header -->
+			</div><!-- /.container -->
+		</div>
+
+		<div class="main-container" id="main-container">
+
+			<div class="main-container-inner">
+
+				<div class="sidebar" id="sidebar">
+					<ul class="nav nav-list">
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-envelope"></i>
+								<span class="menu-text"> 订单管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="/order/">
+										<i class="icon-double-angle-right"></i>
+										订单信息管理
+									</a>
+								</li>
+
+								{% if role == 'admin' %}
+								<li>
+									<a href="/order_verify/">
+										<i class="icon-double-angle-right"></i>
+										订单审核
+									</a>
+								</li>
+								{% endif %}
+
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-desktop"></i>
+								<span class="menu-text"> 入库管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="/ware_confirm/">
+										<i class="icon-double-angle-right"></i>
+										订单入库确认管理
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li class="active open">
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-credit-card"></i>
+								<span class="menu-text"> 销售管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+
+								<li class="active">
+									<a href="/sale/">
+										<i class="icon-double-angle-right"></i>
+										销售信息管理
+									</a>
+								</li>
+								{% if role == 'admin' %}
+								<li>
+									<a href="/order_check/">
+										<i class="icon-double-angle-right"></i>
+										销售单审核
+									</a>
+								</li>
+								{% endif %}
+								<li>
+									<a href="/sale_assis/">
+										<i class="icon-double-angle-right"></i>
+										销售顾问管理
+									</a>
+								</li>
+								<li>
+									<a href="/care_number/">
+										<i class="icon-double-angle-right"></i>
+										大保单号管理
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-group"></i>
+								<span class="menu-text"> 用户管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="/users/">
+										<i class="icon-double-angle-right"></i>
+										添加用户
+									</a>
+								</li>
+								{% if role == 'admin' %}
+								<li>
+									<a href="/user_manage/">
+										<i class="icon-double-angle-right"></i>
+										用户管理
+									</a>
+								</li>
+								{% endif %}
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-lock"></i>
+								<span class="menu-text"> 修改密码 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="/change_pw/">
+										<i class="icon-double-angle-right"></i>
+										修改密码
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="/logout/">
+								<i class="icon-off"></i>
+								<span class="menu-text"> 退出系统 </span>
+							</a>
+						</li>
+					</ul><!-- /.nav-list -->
+
+				
+				</div>
+
+				<div class="main-content">
+					<div class="breadcrumbs" id="breadcrumbs">
+						<script type="text/javascript">
+							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+						</script>
+
+						<ul class="breadcrumb">
+							<li>
+								<i class="icon-home home-icon"></i>
+								<a href="#">首页</a>
+							</li>
+							<li class="active"><a href="/sale/">销售信息管理</a></li>
+						</ul><!-- .breadcrumb -->
+
+					</div>
+
+					<div class="page-content">
+
+					<div class="page-header">
+							<h4>
+								#
+								<small>
+									销售信息
+								</small>
+							</h4>
+						</div>
+
+						<div class="row">
+							<div class="col-xs-12">
+								<!-- PAGE CONTENT BEGINS -->
+								<form class="form-inline" method="get" action=".">
+								<div class="form-group col-xs-12">
+					              <div class="form-group col-xs-4">
+					                <input type="text" name="carenumber" id="carenumber" class="form-control search-query" placeholder="保险单号">
+					              </div>
+
+					              <div class="form-group col-xs-4">
+					                <input type="text" name="clientname" id="clientname" class="form-control search-query" placeholder="客户名称">
+					              </div>
+					              
+					              <div class="form-group col-xs-4">
+					                <input type="text" name="carname" id="carname" class="form-control search-query" placeholder="车型">
+					              </div>
+					            </div>
+
+					            <div class="form-group col-xs-12" style="margin:1em 0;">
+					            	<div class="form-group col-xs-4">
+					              <div class="input-group">
+					              <input class="form-control date-picker" id="id-date-picker-1" type="text" data-date-format="yyyy-mm-dd" name="from">
+					              <span class="input-group-addon">
+					              	<i class="icon-calendar bigger-110"></i>
+					              </span>
+
+					              <input class="form-control date-picker" id="id-date-picker-2" type="text" data-date-format="yyyy-mm-dd" name="to">
+					              <span class="input-group-addon">
+					              	<i class="icon-calendar bigger-110"></i>
+					              </span>
+
+								</div>
+									</div>
+
+									<div class="form-group col-xs-3">
+					                <input type="text" name="saleman" id="saleman" class="form-control search-query" placeholder="销售顾问">
+					              </div>
+
+					              <div class="form-group col-xs-3">
+					                <input type="text" name="beneman" id="beneman" class="form-control search-query" placeholder="第一受益人">
+					              </div>
+
+					              <div class="form-group col-xs-1">
+					                <button id="search" type="submit" class="form-control search-btn btn btn-purple">查询</button>
+					              </div>
+
+					            </div>
+
+					          </form>
+					<div class="row">
+
+					<div class="col-xs-12">
+					
+										
+										<div class="table-responsive" style="margin-top:1em;padding:0 12px;">
+										<a href="/add_sale/" style="text-decoration:none;color:#fff;"><button class="btn btn-info">新增销售单</button></a>
+											
+                  <table id="user_selected" class="table table-striped table-bordered table-hover" style="margin-top:1em;">
+                
+                  <thead>
+                    <tr id="taghead">
+                      <th>保险单号</th>
+                      <th>POS机交易码</th>
+                      <th>代理商名称</th>
+                      <th>客户名称</th>
+                      <th>移动电话</th>
+                      <th>汽车类型</th>
+                      <th>审核状态</th>
+                      <th>收款状态</th>
+                      <th>安装状态</th>
+                      <th>操作</th>
+                      <th class="center">操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for care in carelist %}
+                  <tr>
+                  	<td>{{ care.care_number }}</td>
+                  	<td>{{ care.pos_number }}</td>
+                  	<td>{{ care.client.fours }}</td>
+                  	<td>{{ care.client.client_name }}</td>
+                  	<td>{{ care.client.mobile}}</td>
+                  	<td>{{ care.car_name }}</td>
+                  	{% if care.check_status == 1 %}
+                  		<td>未审核</td>
+                  	{% elif care.check_status == 0 %}
+                  		<td>已审核</td>
+                  	{% endif %}
+
+                  	{% if care.sale_status == 1 %}
+                  		<td>未收款</td>
+                  	{% elif care.sale_status == 0 %}
+                  		<td>已收款</td>
+                  	{% endif %}
+
+                  	{% if care.install_status == 1 %}
+                  		<td>未安装</td>
+                  	{% elif care.install_status == 0 %}
+                  		<td>已定位</td>
+                  	{% endif %}
+
+                  	{% if care.check_status == 1 %}
+                  	{% if role == 'sale' %}
+                  	<td><button class="btn btn-info sub btn-xs showbtn" data-toggle="modal" data-target="#myModal" data-info="{{care.vin}}">查看</button> | <a href="/sale_edit/?id={{care.vin}}">修改</a></td>
+                  	{% elif role == 'admin' %}
+
+                  	<td style="color:#cccccc;"><button class="btn btn-info sub btn-xs showbtn" data-toggle="modal" data-target="#myModal" data-info="{{care.vin}}">查看</button> | 修改 | <button class="btn btn-info sub btn-xs deletesale" data-info="{{care.vin}}">删除</button></td>
+                  	{% endif %}
+                  	{% elif care.check_status == 0 %}
+                  	{% if role == 'sale' %}
+                  	<td style="color:#cccccc;"><button class="btn btn-info sub btn-xs showbtn" data-toggle="modal" data-target="#myModal" data-info="{{care.vin}}">查看</button> | 修改</td>
+                  	{% elif role == 'admin' %}
+                  	<td><button class="btn btn-info sub btn-xs showbtn" data-toggle="modal" data-target="#myModal" data-info="{{care.vin}}">查看</button> | <a href="/sale_edit/?id={{care.vin}}">修改</a> | <button class="btn btn-info sub btn-xs deletesale" data-info="{{care.vin}}">删除</button></td>
+                  	{% endif %}
+                  	{% endif %}
+               
+
+                  	{% if care.check_status == 1 %}
+                  	<td class="center" style="color:#cccccc;">打印</td>
+                  	{% elif care.check_status == 0 %}
+                  	<td class="center"><button type="button" class="btn btn-info sub btn-xs"  
+   onclick="window.open('/print_tpl?nu={{ care.care_number }}&render=printer','_new')">打印</button></td>
+                  	
+                  	{% endif %}
+                  </tr>
+                  {% endfor %}
+                  </tbody>
+                  </table>
+
+                 <div class="row" style="padding:0 12px;">
+                  	<div class="col-sm-6">
+                  		<div class="dataTables_info" id="sample-table-2_info"></div></div>
+                  		<ul class="pager">
+                  		{% if carelist.has_previous %}
+							  <li class="previous">
+							    <a href="?page={{ carelist.previous_page_number }}&{{query}}">← 上一页</a>
+							  </li>
+						{% endif %}
+
+						{% if carelist.has_next %}
+							  <li class="next">
+							    <a href="?page={{ carelist.next_page_number }}&{{query}}">下一页 →</a>
+							  </li>
+						{% endif %}
+						</ul>
+                  	<div class="col-sm-6">
+                  		</div>
+
+                  	</div>
+
+                  	<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:80%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">销售单详细信息</h4>
+            </div>
+            <div class="modal-body">
+           
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+               
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+				</div><!-- /.table-responsive -->
+
+									</div>
+		
+
+									</div><!-- /row -->
+
+								<!-- PAGE CONTENT ENDS -->
+
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+
+					</div><!-- /.page-content -->
+				</div><!-- /.main-content -->
+
+			</div><!-- /.main-container-inner -->
+		</div><!-- /.main-container -->
+
+		<!-- basic scripts -->
+
+		<!--[if !IE]> -->
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<![endif]-->
+
+		<!--[if !IE]> -->
+
+		<script type="text/javascript">
+			window.jQuery || document.write("<script src='{% static 'pay/js/jquery-2.0.3.min.js' %}'>"+"<"+"script>");
+		</script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script type="text/javascript">
+ window.jQuery || document.write("<script src='assets/js/jquery-1.10.2.min.js'>"+"<"+"script>");
+</script>
+<![endif]-->
+
+		<script type="text/javascript">
+			if("ontouchend" in document) document.write("<script src='{% static 'pay/js/jquery.mobile.custom.min.js' %}'>"+"<"+"script>");
+		</script>
+		<script src="{% static 'pay/js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'pay/js/typeahead-bs2.min.js' %}"></script>
+
+		<!-- page specific plugin scripts -->
+
+		<!--[if lte IE 8]>
+		  <script src="assets/js/excanvas.min.js"></script>
+		<![endif]-->
+
+		<script src="{% static 'pay/js/jquery-ui-1.10.3.custom.min.js' %}"></script>
+		<script src="{% static 'pay/js/jquery.ui.touch-punch.min.js' %}"></script>
+		<script src="{% static 'pay/js/jquery.slimscroll.min.js' %}"></script>
+		<script src="{% static 'pay/js/flot/jquery.flot.min.js' %}"></script>
+		<script src="{% static 'pay/js/flot/jquery.flot.pie.min.js' %}"></script>
+		<script src="{% static 'pay/js/flot/jquery.flot.resize.min.js' %}"></script>
+		<script src="{% static 'pay/js/date-time/daterangepicker.min.js' %}"></script>
+		<script src="{% static 'pay/js/date-time/bootstrap-timepicker.min.js' %}"></script>
+		<script src="{% static 'pay/js/date-time/moment.min.js' %}"></script>
+		<script src="{% static 'pay/js/date-time/bootstrap-datepicker.min.js' %}"></script>
+
+		<!-- ace scripts -->
+
+		<script src="{% static 'pay/js/ace-elements.min.js' %}"></script>
+		<script src="{% static 'pay/js/ace.min.js' %}"></script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+					$('.date-picker').datepicker({autoclose:true}).next().on(ace.click_event, function(){
+					$(this).prev().focus();
+					});
+
+					$(".btn.btn-info.sub.btn-xs.showbtn").click(function(e) {
+						e.preventDefault();
+						var vin = $(this).data("info");
+						console.log(vin);
+						htmlobj = $.ajax({url:"/modal_show?vin="+vin,async:false});
+  						$(".modal-body").html("<pre>" + htmlobj.responseText + "</pre>");
+  						
+					});
+
+					$(".btn.btn-info.sub.btn-xs.deletesale").click(function(e) {
+					e.preventDefault();
+					var info = $(this).data("info");
+					var cfm=confirm("确定要删除?");
+					if (cfm == true) {
+						$.ajax({
+							type: "POST",
+							url: "/saleinfo_delete/",
+							data: {
+								vin: info
+							},
+							dataType: "json",
+							success: function(msg) {
+								msg = msg.msg;
+								if (msg == 'ok') {
+									alert("删除成功");
+									window.location.reload();
+								} else {
+									alert("删除失败，请重试");
+									return false;
+								}
+							}
+						})
+					}
+				})
+			})
+		</script>
+		</body>
+
+</html>
+

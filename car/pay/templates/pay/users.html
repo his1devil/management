@@ -1,0 +1,444 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>人信科技车管家销售管理系统</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<!-- basic styles -->
+		<link href="{% static 'pay/css/bootstrap.min.css' %}" rel="stylesheet" />
+		<link rel="stylesheet" href="{% static 'pay/css/font-awesome.min.css' %}" />
+		<!--[if IE 7]>
+		  <link rel="stylesheet" href="assets/css/font-awesome-ie7.min.css" />
+		<![endif]-->
+
+		<!-- page specific plugin styles -->
+
+		<!-- ace styles -->
+
+		<link rel="stylesheet" href="{% static 'pay/css/ace.min.css' %}" />
+		<link rel="stylesheet" href="{% static 'pay/css/ace-rtl.min.css' %}" />
+		<link rel="stylesheet" href="{% static 'pay/css/ace-skins.min.css' %}" />
+
+		<!--[if lte IE 8]>
+		  <link rel="stylesheet" href="assets/css/ace-ie.min.css" />
+		<![endif]-->
+
+		<!-- inline styles related to this page -->
+
+		<!-- ace settings handler -->
+
+		<script src="{% static 'pay/js/ace-extra.min.js' %}"></script>
+		<script src="{% static 'pay/js/jquery-2.0.3.min.js' %}"></script>
+
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+
+		<!--[if lt IE 9]>
+		<script src="assets/js/html5shiv.js"></script>
+		<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+		<style type="text/css">
+			.linkedinput {margin-right:0.3em;}
+			.needed {color:red;}
+		</style>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#adduser").click(function(e) {
+					e.preventDefault();
+					var username = $("#username").val();
+					var password = $("#password").val();
+					var area = $("#area").val();
+					var group = $("#group option:selected").val();
+					var note = $("#note").val();
+
+					if (username == '' || password == '' || area == '' || group == '') {
+						alert("必填项不能为空，请检查");
+						return false;
+
+					} else {
+
+						$.ajax({
+						type: "POST",
+						url: "/add_user/",
+						data: {
+							username: username,
+							password: password,
+							area: area,
+							group: group,
+							note: note
+						},
+						dataType: "json",
+						success: function(msg){
+							msg = msg.msg;
+							if(msg == 'already') {
+								alert("用户已经存在");
+								return false;
+							} else if (msg == 'ok') {
+								alert("用户添加成功");
+								window.location.href="/users/";
+							} else {
+								alert("错误，请重试");
+								return false;
+							}
+						}
+					})
+
+					}
+					
+				});
+			});
+
+		</script>
+	</head>
+
+	<body>
+		<div class="navbar navbar-default" id="navbar">
+			<script type="text/javascript">
+				try{ace.settings.check('navbar' , 'fixed')}catch(e){}
+			</script>
+
+			<div class="navbar-container" id="navbar-container">
+				<div class="navbar-header pull-left">
+					<a href="#" class="navbar-brand">
+						<small>
+							人信科技车管家销售管理系统
+						</small>
+					</a><!-- /.brand -->
+				</div><!-- /.navbar-header -->
+
+				<div class="navbar-header pull-right" role="navigation">
+					<ul class="nav ace-nav">
+
+						<li class="light-blue">
+							<a data-toggle="dropdown" href="#" class="dropdown-toggle">
+								<span class="user-info">
+									<small>欢迎登录</small>
+									{{username}}
+								</span>
+
+								<i class="icon-caret-down"></i>
+							</a>
+
+							<ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+
+								<li>
+									<a href="/change_pw/">
+										<i class="icon-block"></i>
+										修改密码
+									</a>
+								</li>
+
+								<li class="divider"></li>
+
+								<li>
+									<a href="/logout/">
+										<i class="icon-off"></i>
+										退出
+									</a>
+								</li>
+							</ul>
+						</li>
+					</ul><!-- /.ace-nav -->
+				</div><!-- /.navbar-header -->
+			</div><!-- /.container -->
+		</div>
+
+		<div class="main-container" id="main-container">
+
+			<div class="main-container-inner">
+
+				<div class="sidebar" id="sidebar">
+					<ul class="nav nav-list">
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-envelope"></i>
+								<span class="menu-text"> 订单管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="/order/">
+										<i class="icon-double-angle-right"></i>
+										订单信息管理
+									</a>
+								</li>
+								<li>
+									<a href="/order_verify/">
+										<i class="icon-double-angle-right"></i>
+										订单审核
+									</a>
+								</li>
+
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-desktop"></i>
+								<span class="menu-text"> 入库管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="/ware_confirm/">
+										<i class="icon-double-angle-right"></i>
+										订单入库确认管理
+									</a>
+								</li>
+
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-credit-card"></i>
+								<span class="menu-text"> 销售管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+
+								<li>
+									<a href="/sale/">
+										<i class="icon-double-angle-right"></i>
+										销售信息管理
+									</a>
+								</li>
+
+								<li>
+									<a href="/order_check/">
+										<i class="icon-double-angle-right"></i>
+										销售单审核
+									</a>
+								</li>
+								<li>
+									<a href="/sale_assis/">
+										<i class="icon-double-angle-right"></i>
+										销售顾问管理
+									</a>
+								</li>
+								<li>
+									<a href="/care_number/">
+										<i class="icon-double-angle-right"></i>
+										大保单号管理
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li class="active open">
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-group"></i>
+								<span class="menu-text"> 用户管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li  class="active">
+									<a href="/users/">
+										<i class="icon-double-angle-right"></i>
+										添加用户
+									</a>
+								</li>
+							</ul>
+							<ul class="submenu">
+								<li>
+									<a href="/user_manage/">
+										<i class="icon-double-angle-right"></i>
+										用户管理
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-lock"></i>
+								<span class="menu-text"> 修改密码 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="/change_pw/">
+										<i class="icon-double-angle-right"></i>
+										修改密码
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="/logout/">
+								<i class="icon-off"></i>
+								<span class="menu-text"> 退出系统 </span>
+							</a>
+						</li>
+					</ul><!-- /.nav-list -->
+
+				
+				</div>
+
+				<div class="main-content">
+					<div class="breadcrumbs" id="breadcrumbs">
+						<script type="text/javascript">
+							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+						</script>
+
+						<ul class="breadcrumb">
+							<li>
+								<i class="icon-home home-icon"></i>
+								<a href="#">首页</a>
+							</li>
+							<li class="active">用户管理</li>
+						</ul><!-- .breadcrumb -->
+
+					</div>
+
+					<div class="page-content">
+
+					<div class="page-header">
+							<h4>
+								#
+								<small>
+									添加用户
+								</small>
+							</h4>
+						</div>
+
+					<div class="col-xs-12">
+
+					<div id="diffcount" style="text-align:center;font-size:10px;padding:1em;color:#3c5a98;display:none"><p>说明: *号标注选项为必填项</p></div>
+
+							<form class="form-horizontal" role="form" method="post" action="#">
+								{% csrf_token %}
+								<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* 号标注为必填项</span></label>
+										
+								</div>
+
+								<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* </span>用户名</label>
+										<div class="col-sm-9">
+											<input type="text" name="username" id="username" class="col-xs-5" required>
+					
+										</div>
+								</div>
+
+								<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* </span>密码</label>
+										<div class="col-sm-9">
+											<input type="password" name="password" id="password" class="col-xs-5">
+					
+										</div>
+								</div>
+
+								<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* </span>代理商名称</label>
+										<div class="col-sm-9">
+											<input type="text" name="area" id="area"  class="col-xs-5">
+					
+										</div>
+								</div>
+
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-2"><span class="needed">* </span>用户组</label>
+										<div class="col-sm-9">
+											<select name="group" id="group" class="col-xs-10 col-sm-5">
+												<option value="repo">库管</option>
+												<option value="sale">销售</option>
+												<option value="admin">后台管理</option>
+											</select>	
+										</div>
+									</div>
+
+									<div class="space-4"></div>
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-2">备注</label>
+										<div class="col-sm-9">
+											<textarea id="note" name="note" class="col-xs-10 col-sm-5" rows="5" placeholder="如需要请填写用户备注"></textarea>
+										</div>
+										
+									</div>
+
+									<div class="form-group"></div>
+									<div class="form-group"></div>									
+						</div>
+
+						<div class="row">
+								<div class="form-group">	
+										<label class="col-sm-3 control-label" for="form-field-1"></label>
+										<label class="col-sm-2 control-label" for="form-field-1">
+											<button type="button" id="adduser" class="btn btn-info btn-block">添加用户</button>
+										</label>
+								
+									</div>
+						</div>
+
+							</form>
+
+						</div><!-- /.row -->
+					</div><!-- /.page-content -->
+				</div><!-- /.main-content -->
+
+			</div><!-- /.main-container-inner -->
+		</div><!-- /.main-container -->
+
+		<!-- basic scripts -->
+
+		<!--[if !IE]> -->
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<![endif]-->
+
+		<!--[if !IE]> -->
+
+		<script type="text/javascript">
+			window.jQuery || document.write("<script src='{% static 'pay/js/jquery-2.0.3.min.js' %}'>"+"<"+"script>");
+		</script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script type="text/javascript">
+ window.jQuery || document.write("<script src='assets/js/jquery-1.10.2.min.js'>"+"<"+"script>");
+</script>
+<![endif]-->
+
+		<script type="text/javascript">
+			if("ontouchend" in document) document.write("<script src='{% static 'pay/js/jquery.mobile.custom.min.js' %}'>"+"<"+"script>");
+		</script>
+		<script src="{% static 'pay/js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'pay/js/typeahead-bs2.min.js' %}"></script>
+
+		<!-- page specific plugin scripts -->
+
+		<!--[if lte IE 8]>
+		  <script src="assets/js/excanvas.min.js"></script>
+		<![endif]-->
+
+		<script src="{% static 'pay/js/jquery-ui-1.10.3.custom.min.js' %}"></script>
+		<script src="{% static 'pay/js/jquery.ui.touch-punch.min.js' %}"></script>
+		<script src="{% static 'pay/js/jquery.slimscroll.min.js' %}"></script>
+		<script src="{% static 'pay/js/flot/jquery.flot.min.js' %}"></script>
+		<script src="{% static 'pay/js/flot/jquery.flot.pie.min.js' %}"></script>
+		<script src="{% static 'pay/js/flot/jquery.flot.resize.min.js' %}"></script>
+
+		<!-- ace scripts -->
+
+		<script src="{% static 'pay/js/ace-elements.min.js' %}"></script>
+		<script src="{% static 'pay/js/ace.min.js' %}"></script>
+
+</html>
+

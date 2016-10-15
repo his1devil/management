@@ -1,0 +1,480 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>盗抢险管理系统</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<!-- basic styles -->
+		<link href="{% static 'pay/css/bootstrap.min.css' %}" rel="stylesheet" />
+		<link rel="stylesheet" href="{% static 'pay/css/font-awesome.min.css' %}" />
+		<!--[if IE 7]>
+		  <link rel="stylesheet" href="assets/css/font-awesome-ie7.min.css" />
+		<![endif]-->
+
+		<!-- page specific plugin styles -->
+
+		<!-- ace styles -->
+
+		<link rel="stylesheet" href="{% static 'pay/css/ace.min.css' %}" />
+		<link rel="stylesheet" href="{% static 'pay/css/ace-rtl.min.css' %}" />
+		<link rel="stylesheet" href="{% static 'pay/css/ace-skins.min.css' %}" />
+
+		<!--[if lte IE 8]>
+		  <link rel="stylesheet" href="assets/css/ace-ie.min.css" />
+		<![endif]-->
+
+		<!-- inline styles related to this page -->
+
+		<!-- ace settings handler -->
+
+		<script src="{% static 'pay/js/ace-extra.min.js' %}"></script>
+
+		<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+
+		<!--[if lt IE 9]>
+		<script src="assets/js/html5shiv.js"></script>
+		<script src="assets/js/respond.min.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+		<div class="navbar navbar-default" id="navbar">
+			<script type="text/javascript">
+				try{ace.settings.check('navbar' , 'fixed')}catch(e){}
+			</script>
+
+			<div class="navbar-container" id="navbar-container">
+				<div class="navbar-header pull-left">
+					<a href="#" class="navbar-brand">
+						<small>
+							车辆安全管理服务盗抢保障系统
+						</small>
+					</a><!-- /.brand -->
+				</div><!-- /.navbar-header -->
+
+				<div class="navbar-header pull-right" role="navigation">
+					<ul class="nav ace-nav">
+
+						<li class="light-blue">
+							<a data-toggle="dropdown" href="#" class="dropdown-toggle">
+								<span class="user-info">
+									<small>欢迎登录</small>
+									{{username}}
+								</span>
+
+								<i class="icon-caret-down"></i>
+							</a>
+
+							<ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+
+								<li>
+									<a href="#">
+										<i class="icon-block"></i>
+										修改密码
+									</a>
+								</li>
+
+								<li class="divider"></li>
+
+								<li>
+									<a href="/logout/">
+										<i class="icon-off"></i>
+										退出
+									</a>
+								</li>
+							</ul>
+						</li>
+					</ul><!-- /.ace-nav -->
+				</div><!-- /.navbar-header -->
+			</div><!-- /.container -->
+		</div>
+
+		<div class="main-container" id="main-container">
+
+			<div class="main-container-inner">
+
+				<div class="sidebar" id="sidebar">
+					<ul class="nav nav-list">
+						<li class="active open">
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-book"></i>
+								<span class="menu-text"> 库存管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li class="active">
+									<a href="#">
+										<i class="icon-double-angle-right"></i>
+										各单位库存管理
+									</a>
+								</li>
+
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-envelope"></i>
+								<span class="menu-text"> 订单管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="/order/">
+										<i class="icon-double-angle-right"></i>
+										订单信息管理
+									</a>
+								</li>
+
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-desktop"></i>
+								<span class="menu-text"> 入库管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="#">
+										<i class="icon-double-angle-right"></i>
+										订单入库确认管理
+									</a>
+								</li>
+
+								<li>
+									<a href="#">
+										<i class="icon-double-angle-right"></i>
+										订货入库单查询
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-credit-card"></i>
+								<span class="menu-text"> 销售管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="#">
+										<i class="icon-double-angle-right"></i>
+										销售顾问管理
+									</a>
+								</li>
+
+								<li>
+									<a href="/sale/">
+										<i class="icon-double-angle-right"></i>
+										销售信息管理
+									</a>
+								</li>
+
+								<li>
+									<a href="#">
+										<i class="icon-double-angle-right"></i>
+										销售修改管理
+									</a>
+								</li>
+
+								<li>
+									<a href="#">
+										<i class="icon-double-angle-right"></i>
+										车辆过户变更管理
+									</a>
+								</li>
+
+								<li>
+									<a href="#">
+										<i class="icon-double-angle-right"></i>
+										销售信息作废管理
+									</a>
+								</li>
+
+								<li>
+									<a href="#">
+										<i class="icon-double-angle-right"></i>
+										4S店销售信息查询
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-group"></i>
+								<span class="menu-text"> 用户管理 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="#">
+										<i class="icon-double-angle-right"></i>
+										添加用户
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="dropdown-toggle">
+								<i class="icon-lock"></i>
+								<span class="menu-text"> 修改密码 </span>
+
+								<b class="arrow icon-angle-down"></b>
+							</a>
+
+							<ul class="submenu">
+								<li>
+									<a href="#">
+										<i class="icon-double-angle-right"></i>
+										修改密码
+									</a>
+								</li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="/logout/">
+								<i class="icon-off"></i>
+								<span class="menu-text"> 退出系统 </span>
+							</a>
+						</li>
+					</ul><!-- /.nav-list -->
+
+				
+				</div>
+
+				<div class="main-content">
+					<div class="breadcrumbs" id="breadcrumbs">
+						<script type="text/javascript">
+							try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+						</script>
+
+						<ul class="breadcrumb">
+							<li>
+								<i class="icon-home home-icon"></i>
+								<a href="#">首页</a>
+							</li>
+							<li class="active">库存管理</li>
+						</ul><!-- .breadcrumb -->
+
+					</div>
+
+					<div class="page-content">
+
+					<div class="page-header">
+							<h4>
+								各单位库存管理
+								<small>
+									<i class="icon-double-angle-right"></i>
+									查询条件
+								</small>
+							</h4>
+						</div>
+
+						<div class="row">
+							<div class="col-xs-12">
+								<!-- PAGE CONTENT BEGINS -->
+
+								<form class="form-inline" method = "post">
+					              {% csrf_token %}
+					              <div class="form-group col-xs-3">
+					                <input type="text" class="form-control search-query" placeholder="设备编码">
+					              </div>
+					              <div class="form-group col-xs-3">
+					                <input type="text" class="form-control search-query" placeholder="设备名称">
+					              </div>
+					              <div class="form-group col-xs-3">
+					                <input type="text" class="form-control search-query" placeholder="库存数量">
+					              </div>
+					              <div class="form-group">
+					              	<button id="sqlQry" type="button" class="form-control search-btn btn btn-purple">查询</button>
+					              	
+					              </div> 
+					          </form>
+					<div class="row">
+
+					<div class="col-xs-12">
+										
+										<div class="table-responsive" style="margin-top:1em;padding:0 12px;">
+											
+                  <table id="user_selected" class="table table-striped table-bordered table-hover">
+                
+                  <thead>
+                    <tr id="taghead">
+                      <th>设备编码</th>
+                      <th>设备名称</th>
+                      <th>型号规格</th>
+                      <th>单位</th>
+                      <th>库存数量</th>
+                      <th>借出数量</th>
+                      <th>在途数量</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody><tr>
+                  			<td>0001</td>
+                  			<td>盗抢保障服务0001</td>
+                  			<td>{{ item.dept }}</td>
+                  			<td>套</td>
+                  			<td>0</td>
+                  			<td>0</td>
+                  			<td>0</td>
+                  			<td><button class="edit btn rollback btn-xs" data-info="{{ item.username }}">借出</button> | <button class="delete btn rollback btn-xs" data-info="{{ item.uername }}" data-toggle="modal" data-target="#">借出明细</button></td>
+                  		</tr></tbody>
+                  </table>
+
+                 <div class="row" style="padding:0 12px;">
+                  	<div class="col-sm-6">
+                  		<div class="dataTables_info" id="sample-table-2_info"></div></div>
+                  		<ul class="pager">
+							  <li class="previous">
+							    <a href="?page={{ userslist.previous_page_number }}">← 上一页</a>
+							  </li>
+
+							  <li class="next">
+							    <a href="?page={{ userslist.next_page_number }}">下一页 →</a>
+							  </li>
+						</ul>
+                  	<div class="col-sm-6">
+                  		</div>
+
+                  	</div>
+				</div><!-- /.table-responsive -->
+
+									</div>
+		
+
+									</div><!-- /row -->
+
+								<div class="row">
+
+					<div class="col-xs-12">
+					<div id="diffcount" style="text-align:center;font-size:1.2em;margin:1em;padding:1em;color:#3c5a98;"><p>库存借出明细</p></div>
+										
+										<div class="table-responsive" style="margin-top:1em;padding:0 12px;">
+											
+                  <table id="user_selected" class="table table-striped table-bordered table-hover">
+                
+                  <thead>
+                    <tr id="taghead">
+                      <th>设备编码</th>
+                      <th>设备名称</th>
+                      <th>序列号</th>
+                      <th>车载号</th>
+                      <th>库存来源</th>
+                      <th>安装单号</th>
+                    </tr>
+                  </thead>
+                  <tbody><tr>
+                  			<td>0001</td>
+                  			<td>盗抢保障服务0001</td>
+                  			<td>0x0001</td>
+                  			<td>0x0001</td>
+                  			<td>Unkown</td>
+                  			<td>0x0001</td>
+                  			
+                  		</tr></tbody>
+                  </table>
+
+                 <div class="row" style="padding:0 12px;">
+                  	<div class="col-sm-6">
+                  		<div class="dataTables_info" id="sample-table-2_info"></div></div>
+                  		<ul class="pager">
+							  <li class="previous">
+							    <a href="?page={{ userslist.previous_page_number }}">← 上一页</a>
+							  </li>
+
+							  <li class="next">
+							    <a href="?page={{ userslist.next_page_number }}">下一页 →</a>
+							  </li>
+						</ul>
+
+                  	</div>
+				</div><!-- /.table-responsive -->
+				<footer class="navbar-fixed-bottom" style="text-align:center;">
+            <hr>
+            <p>© 2016 公司名称待定</p>
+        </footer>
+
+
+									</div>
+		
+
+									</div><!-- /row -->
+
+								<!-- PAGE CONTENT ENDS -->
+
+							</div><!-- /.col -->
+						</div><!-- /.row -->
+					</div><!-- /.page-content -->
+				</div><!-- /.main-content -->
+
+			</div><!-- /.main-container-inner -->
+		</div><!-- /.main-container -->
+
+		<!-- basic scripts -->
+
+		<!--[if !IE]> -->
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<![endif]-->
+
+		<!--[if !IE]> -->
+
+		<script type="text/javascript">
+			window.jQuery || document.write("<script src='{% static 'pay/js/jquery-2.0.3.min.js' %}'>"+"<"+"script>");
+		</script>
+
+		<!-- <![endif]-->
+
+		<!--[if IE]>
+<script type="text/javascript">
+ window.jQuery || document.write("<script src='assets/js/jquery-1.10.2.min.js'>"+"<"+"script>");
+</script>
+<![endif]-->
+
+		<script type="text/javascript">
+			if("ontouchend" in document) document.write("<script src='{% static 'pay/js/jquery.mobile.custom.min.js' %}'>"+"<"+"script>");
+		</script>
+		<script src="{% static 'pay/js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'pay/js/typeahead-bs2.min.js' %}"></script>
+
+		<!-- page specific plugin scripts -->
+
+		<!--[if lte IE 8]>
+		  <script src="assets/js/excanvas.min.js"></script>
+		<![endif]-->
+
+		<script src="{% static 'pay/js/jquery-ui-1.10.3.custom.min.js' %}"></script>
+		<script src="{% static 'pay/js/jquery.ui.touch-punch.min.js' %}"></script>
+		<script src="{% static 'pay/js/jquery.slimscroll.min.js' %}"></script>
+		<script src="{% static 'pay/js/flot/jquery.flot.min.js' %}"></script>
+		<script src="{% static 'pay/js/flot/jquery.flot.pie.min.js' %}"></script>
+		<script src="{% static 'pay/js/flot/jquery.flot.resize.min.js' %}"></script>
+
+		<!-- ace scripts -->
+
+		<script src="{% static 'pay/js/ace-elements.min.js' %}"></script>
+		<script src="{% static 'pay/js/ace.min.js' %}"></script>
+
+</html>
+

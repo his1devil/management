@@ -1,0 +1,145 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>人信科技车管家销售管理系统 | 青岛人信信息科技有限公司</title>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'pay/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'pay/theme.css' %}">
+
+    <script src="{% static 'pay/js/jquery-2.0.3.min.js' %}"></script>
+  
+
+    <!-- Demo page code -->
+    
+    <style type="text/css">
+        body {
+            background-color: #fff;
+            background-image: none;
+        }
+        #line-chart {
+            height:300px;
+            width:800px;
+            margin: 0px auto;
+            margin-top: 1em;
+        }
+        .brand { font-family: georgia, serif; }
+        .brand .first {
+            color: #ccc;
+            font-style: italic;
+        }
+        .brand .second {
+            color: #f4f379;
+            font-size: 16px;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $(".btn.btn-primary.pull-right").click(function(e) {
+                e.preventDefault();
+                var username = $("#id_username").val()
+                var password = $("#id_password").val();
+                $.ajax({
+                    type: "POST",
+                    url: "/valid_user/",
+                    data: {
+                        username: username,
+                        password: password
+                    },
+                    dataType: "json",
+                    success: function(msg){
+                        msg = msg.msg;
+                        if (msg=='failed') {
+                            alert("登录信息错误，请检查!");
+                            return false;
+                        } else if (msg=='ok') {
+                            $("form").submit();
+                        }
+                    }
+                })
+
+            })
+        })
+    </script>
+
+  </head>
+
+  <!--[if lt IE 7 ]> <body class="ie ie6"> <![endif]-->
+  <!--[if IE 7 ]> <body class="ie ie7"> <![endif]-->
+  <!--[if IE 8 ]> <body class="ie ie8"> <![endif]-->
+  <!--[if IE 9 ]> <body class="ie ie9"> <![endif]-->
+  <!--[if (gt IE 9)|!(IE)]><!--> 
+  <body> 
+  <!--<![endif]-->
+    
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <ul class="nav pull-right">
+                    
+                </ul>
+                <a class="brand" href="#"><span class="second">人信科技车管家销售管理系统</span></a>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="container-fluid">
+        
+        <div class="row-fluid">
+            <div class="dialog span4">
+                <div class="block">
+                    <div class="block-heading">登录</div>
+                    <div class="block-body">
+
+                        <form method="post" class="form-signin">
+                        {% csrf_token %}
+                                {% for field in uf %}
+                                    {% if field.errors %}
+                                        <div class="control-group error">
+                                            <label class="control-label">{{ field.label }}</label> 
+                                            <div class="controls">{{ field }}
+                                                
+                                            </div>
+                                            <span class="help-inline">
+                                                    {% for error in  field.errors %}{{ error }}{% endfor %}
+                                                </span>
+                                        </div>
+                                    {% else %}
+                                        <div class="control-group">
+                                            <label class="control-label">{{ field.label }}</label> 
+                                            <div class="controls">{{ field }}
+                                                
+                                            </div>
+                                            {% if field.help_text %}
+                                                    <p class="help-inline"><small>{{ field.help_text }}</small></p>
+                                                {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                          
+                            <button type="button" class="btn btn-primary pull-right" >登录</button>
+                            <div class="clearfix"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+        <footer class="navbar-fixed-bottom" style="text-align:center;">
+            <hr>
+            <p>&copy; 2016 青岛人信信息科技有限公司</p>
+        </footer>
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    
+  </body>
+</html>
+
+
