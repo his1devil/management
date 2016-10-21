@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load split_filter %}
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -53,7 +54,7 @@
 					var sale_status = $("#sale_status option:selected").val();
 					var install_status = $("#install_status option:selected").val();
 					var check_status = $("#check_status option:selected").val()
-					var vin = $("input#vin").val()
+					var uid = $("input#uid").val()
 
 					if (carenumber == '' || posnumber == '' || sale_status == '' || install_status == '' || check_status == '') {
 						alert("必填项不能为空，请检查!");
@@ -69,7 +70,7 @@
 								sale_status: sale_status,
 								install_status: install_status,
 								check_status: check_status,
-								vin: vin,
+								uid: uid,
 							},
 							dataType: "json",
 							success:function(msg) {
@@ -77,14 +78,12 @@
 									alert("销售单审核成功!");
 									window.location.href="/order_check";
 								} else {
-									alert("审核失败，请重试！");
+									alert("审核失败，请检查小保单号码是否重复！");
 									return false;
 								}
 							}
-
 						})
 					}
-
 				});
 			})
 		</script>
@@ -225,7 +224,13 @@
 								<li>
 									<a href="/care_number/">
 										<i class="icon-double-angle-right"></i>
-										大保单号管理
+										保单号管理
+									</a>
+								</li>
+								<li>
+									<a href="/product_manage/">
+										<i class="icon-double-angle-right"></i>
+										设备管理
 									</a>
 								</li>
 							</ul>
@@ -332,23 +337,23 @@
                   </thead>
                   <tbody>
                   <tr>
-                  	<td>{{ care.client.fours }}</td>
-                  	{% if care.client.client_type == 'personal' %}
+                  	<td>{{ care.fours }}</td>
+                  	{% if care.client_type == 'personal' %}
                   	<td>个人客户</td>
-                  	{% elif care.client.client_type == 'company' %}
+                  	{% elif care.client_type == 'company' %}
                   	<td>公司客户</td>
                   	{% endif %}
-                  	<td>{{ care.client.client_name }}</td>
-                  	{% if care.client.identity_type == 'identity' %}
+                  	<td>{{ care.client_name }}</td>
+                  	{% if care.identity_type == 'identity' %}
                   	<td>身份证</td>
-                  	{% elif care.client.identity_type == 'passport' %}
+                  	{% elif care.identity_type == 'passport' %}
                   	<td>护照</td>
-                  	{% elif care.client.identity_type == 'driven' %}
+                  	{% elif care.identity_type == 'driven' %}
                   	<td>驾照</td>
                   	{% endif %}
-                  	<td>{{ care.client.identity_nu }}</td>
-                  	<td>{{ care.client.address }}</td>
-                  	<td>{{ care.client.mobile }}</td>
+                  	<td>{{ care.identity_nu }}</td>
+                  	<td>{{ care.address }}</td>
+                  	<td>{{ care.mobile }}</td>
                   </tr>
 				<thead>
                     <tr id="taghead">
@@ -363,7 +368,7 @@
                   </thead>
                   <tr>
                   	<td>{{ care.financial }}</td>
-                  	<td>{{ care.product_name }}</td>
+                  	<td>{{ care.product_name }} 年</td>
                   	<td>{{ care.equip_name }}</td>
                   	<td>{{ care.second_equip_name }}</td>
                   	<td>{{ care.car_name }}</td>
@@ -406,6 +411,9 @@
                       <th>收款状态</th>
                       <th>安装状态</th>
                       <th>保险所需文件</th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tr>
@@ -427,9 +435,12 @@
                   	{% endif %}
                   	<td>
                   	{% for file in files %}
-                  	<a href="{{ file.files.url }}" target="_blank">{{ file.files.url }}</a>
+                  	<a href="{{ file.files.url }}" target="_blank">{{ file.files.url|spl:"/" }}</a>
                   	{% endfor %}
                   	</td>
+                  	<td></td>
+                  	<td></td>
+                  	<td></td>
                   </tr>
 
                   </tbody>
@@ -447,7 +458,7 @@
 								</div>
 
 								<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* </span>大保单号码</label>
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* </span>保单号码</label>
 										<div class="col-sm-9">
 										{% for cn in cnu %}
 											<input type="text" name="bcarenu" id="bcarenu" class="col-xs-5" value="{{cn.b_care_number}}" placeholder="{{cn.b_care_number}}" disabled="true">
@@ -466,15 +477,20 @@
 										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* </span>POS机交易码</label>
 										<div class="col-sm-9">
 											<input type="text" name="posnumber" id="posnumber"  class="col-xs-5" value="{{care.pos_number}}">
-											<input type="text" value="{{care.vin}}" id="vin" style="display:none;">
+											<input type="text" value="{{care.uid}}" id="uid" style="display:none;">
 										</div>
 								</div>
 								<div class="form-group">
 								<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* </span>审核状态</label>
 								<div class="col-sm-9">
 									<select name="check_status" id="check_status" class="col-xs-5">
-					               		<option value="1">未审核</option>
+									{% if care.check_status == 1 %}
+					               		<option value="1" selected>未审核</option>
 										<option value="0">已审核</option>
+									{% elif care.check_status == 0 %}
+										<option value="0" selected>已审核</option>
+										<option value="1">未审核</option>
+									{% endif %}
 									</select>	
 								</div>
 									
@@ -483,8 +499,13 @@
 										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* </span>收款状态</label>
 									<div class="col-sm-9">
 									<select name="sale_status" id="sale_status" class="col-xs-5">
-					               		<option value="1">未收款</option>
+									{% if care.sale_status == 1 %}
+					               		<option value="1" selected>未收款</option>
 										<option value="0">已收款</option>
+									{% elif care.sale_status == 0 %}
+										<option value="0" selected>已收款</option>
+										<option value="1">未收款</option>
+									{% endif %}
 									</select>	
 									</div>
 								</div>
@@ -492,8 +513,13 @@
 										<label class="col-sm-3 control-label no-padding-right" for="form-field-1"><span class="needed">* </span>安装状态</label>
 									<div class="col-sm-9">
 										<select name="install_status" id="install_status" class="col-xs-5">
-					               		<option value="1">未安装</option>
+										{% if care.install_status == 1 %}
+					               		<option value="1" selected>未安装</option>
 										<option value="0">已安装</option>
+										{% elif care.install_status == 0 %}
+										<option value="0" selected="true">已安装</option>
+										<option value="1">未安装</option>
+										{% endif %}
 									</select>
 									</div>
 								</div>

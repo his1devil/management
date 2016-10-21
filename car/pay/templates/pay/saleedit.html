@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="utf-8" />
+		<meta content="text/html; charset=utf-8"/>
 		<title>人信科技车管家销售管理系统</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<!-- basic styles -->
@@ -43,6 +43,23 @@
 			.linkedinput {margin-right:0.3em;}
 			.needed {color:red;}
 		</style>
+				<script type="text/javascript">
+		$(function() {
+			$("form").bind('submit', function() {
+				var i=0;
+				$("input").each(function() {
+				var val=$(this).val();
+				if (val=="") {
+					i=1;
+				}
+				});
+				if (i==1) {
+				alert("请将信息填写完整");
+				return false;
+				}
+			})
+		})
+		</script>
 	</head>
 
 	<body>
@@ -181,7 +198,13 @@
 								<li>
 									<a href="/care_number/">
 										<i class="icon-double-angle-right"></i>
-										大保单号管理
+										保单号管理
+									</a>
+								</li>
+								<li>
+									<a href="/product_manage/">
+										<i class="icon-double-angle-right"></i>
+										设备管理
 									</a>
 								</li>
 							</ul>
@@ -286,10 +309,10 @@
 										<label class="col-sm-4 control-label no-padding-right" for="form-field-1">客户类型</label>
 										<div class="col-sm-8">
 											<select name="clienttype" class="col-xs-10">
-											{% if care.client.client_type == 'personal' %}
+											{% if care.client_type == 'personal' %}
 												<option value="personal" selected>个人客户</option>
 												<option value="company">公司客户</option>
-											{% elif care.client.client_type == 'company' %}
+											{% elif care.client_type == 'company' %}
 												<option value="personal">个人客户</option>
 												<option value="company" selected>公司客户</option>
 											{% endif %}
@@ -303,9 +326,10 @@
 										<label class="col-sm-4 control-label no-padding-right" for="form-field-1">客户名称</label>
 										
 										<div class="col-sm-8">
-											<input type="text" name="clientname" id="clientname" class="col-xs-10" value="{{care.client.client_name}}">
+											<input type="text" name="clientname" id="clientname" class="col-xs-10" value="{{care.client_name}}">
 											<input style="display:none;" type="text" name="sid" id="sid" class="col-xs-10" value="{{care.id}}">
-											<input style="display:none;" type="text" name="cid" id="cid" class="col-xs-10" value="{{care.client.id}}">
+											<input style="display:none;" type="text" name="cid" id="cid" class="col-xs-10" value="{{care.id}}">
+											<input style="display:none;" type="text" name="uid" id="uid" class="col-xs-10" value="{{care.uid}}">
 										</div>	
 								</div>
 								</div>
@@ -330,7 +354,7 @@
 										<label class="col-sm-4 control-label no-padding-right" for="form-field-1">证件号码</label>
 										
 										<div class="col-sm-8">
-											<input type="text" name="idnumber" id="idnumber"  class="col-xs-10" value="{{care.client.identity_nu}}">
+											<input type="text" name="idnumber" id="idnumber"  class="col-xs-10" value="{{care.identity_nu}}">
 										</div>	
 								</div>
 								</div>
@@ -341,9 +365,9 @@
 
 										<label class="col-sm-2 control-label no-padding-right" for="form-field-1">联系地址</label>
 										<div class="col-sm-10" id="city">
-      										<select id="prov" name="prov" class="prov col-xs-2"><option>{{care.client.prov}}</option></select>  
-    										<select id="cities" name="city" class="city col-xs-2" disabled="disabled"><option>{{care.client.city}}</option></select> 
-											<input style="margin-top:0.1em;" type="text" name="address" id="address" class="col-xs-6" value="{{care.client.address}}">
+      										<select id="prov" name="prov" class="prov col-xs-2"><option>{{care.prov}}</option></select>  
+    										<select id="cities" name="city" class="city col-xs-2" disabled="disabled"><option>{{care.city}}</option></select> 
+											<input style="margin-top:0.1em;" type="text" name="address" id="address" class="col-xs-6" value="{{care.address}}">
 										</div>
 									
 								</div>
@@ -356,7 +380,7 @@
 
 										<label class="col-sm-4 control-label no-padding-right" for="form-field-1">移动电话</label>
 										<div class="col-sm-8">
-											<input name="mobilephone" id="mobilephone" class="col-xs-10" value="{{care.client.mobile}}">
+											<input type="text" name="mobilephone" id="mobilephone" class="col-xs-10" value="{{care.mobile}}">
 										</div>
 								</div>
 
@@ -390,7 +414,7 @@
 
 										<label class="col-sm-4 control-label no-padding-right" for="form-field-1">贷款金融机构</label>
 										<div class="col-sm-8">
-											<input name="fcompany" id="fcompany" class="col-xs-10" value="{{care.financial}}">
+											<input type="text" name="fcompany" id="fcompany" class="col-xs-10" value="{{care.financial}}">
 										</div>	
 									
 								</div>
@@ -462,9 +486,9 @@
 										<label class="col-sm-4 control-label no-padding-right" for="form-field-1">主设备名称</label>
 										<div class="col-sm-8">
 										<select name="equipname" class="col-xs-10" id="equipname">
-										{% if care.equip_name ==  '智能蓝盒-G1-2016'%}
-												<option value="智能蓝盒-G1-2016" selected>智能蓝盒-G1-2016</option>
-											{% endif %}
+										{% for first in firstproducts %}
+											<option value="{{first.first_product}}">{{first.first_product}}</option>
+										{% endfor %}
 											</select>
 										</div>
 								</div>
@@ -473,9 +497,9 @@
 										<label class="col-sm-4 control-label no-padding-right" for="form-field-1">辅设备名称</label>
 										<div class="col-sm-8">
 											<select name="secondequip" class="col-xs-10" id="secondequip">
-											{% if care.second_equip_name == '智能蓝盒-X1-2016' %}
-												<option value="智能蓝盒-X1-2016" selected>智能蓝盒-X1-2016</option>
-											{% endif %}
+											{% for second in secondproducts %}
+											<option value="{{second.second_product}}">{{second.second_product}}</option>
+										{% endfor %}
 											</select>
 										</div>
 								</div>
@@ -527,7 +551,7 @@
 
 										<label class="col-sm-4 control-label no-padding-right" for="form-field-1">车架号码</label>
 										<div class="col-sm-8">
-											<input name="vin" id="vin" class="col-xs-10" value="{{care.vin}}">
+											<input type="text" name="vin" id="vin" class="col-xs-10" value="{{care.vin}}">
 										</div>
 								</div>
 
@@ -536,7 +560,7 @@
 										<label class="col-sm-4 control-label no-padding-right" for="form-field-1">发动机号码</label>
 										
 										<div class="col-sm-8">
-											<input name="carnumber" id="carnumber" class="col-xs-10" value="{{care.car_number}}">
+											<input type="text" name="carnumber" id="carnumber" class="col-xs-10" value="{{care.car_number}}">
 										
 										</div>	
 								</div>
@@ -549,18 +573,15 @@
 										<label class="col-sm-4 control-label no-padding-right" for="form-field-1">销售顾问</label>
 										<div class="col-sm-8">
 											<select name="saleman" class="col-xs-10" id="saleman">
+											<option value="{{care.sale_man}}" selected>{{care.sale_man}}</option>
 											{% for adviser in adviserlist %}
+											{% if adviser.username != care.sale_man %}
 												<option value="{{adviser.username}}">{{adviser.username}}</option>
+											{% endif %}
+											
 											{% endfor %}
 											</select>		
 										</div>
-								</div>
-								<div class="form-group col-sm-5">
-
-										<label class="col-sm-4 control-label no-padding-right" for="form-field-1">第一受益人</label>
-										<div class="col-sm-8">
-											<input name="beneman" id="beneman" class="col-xs-10" value="{{care.first_benefit}}">
-										</div>	
 								</div>
 
 								</div>
@@ -785,9 +806,8 @@
 					e.preventDefault();
 					var info = $(this).data("info");
 					var vin = $("#vin").val();
+					var uid = $("#uid").val();
 					var cfm=confirm("确定要删除?");
-					console.log(info);
-					console.log(vin);
 					
 					if (cfm == true) {
 						$.ajax({
@@ -795,7 +815,8 @@
 							url: "/safefile_delete/",
 							data: {
 								file: info,
-								vin: vin
+								vin: vin,
+								uid: uid
 							},
 							dataType: "json",
 							success: function(msg) {
@@ -812,10 +833,12 @@
 					}
 				});
 
-				var city = "{{ care.client.prov }}";
+				var prov = "{{ care.prov }}";
+				var city = "{{ care.city }}";
 				$("#city").citySelect({  
     				url:"/static/pay/js/city.min.js",
-    				prov:city,
+    				prov:prov,
+    				city:city,
 					nodata:null,
 					required:true
 				});  

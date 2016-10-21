@@ -182,7 +182,13 @@
 								<li>
 									<a href="/care_number/">
 										<i class="icon-double-angle-right"></i>
-										大保单号管理
+										保单号管理
+									</a>
+								</li>
+								<li>
+									<a href="/product_manage/">
+										<i class="icon-double-angle-right"></i>
+										设备管理
 									</a>
 								</li>
 							</ul>
@@ -294,17 +300,17 @@
                   <tbody>
                   {% for care in carelist %}
                   <tr>
-                  	<td>{{ care.client.fours }}</td>
-                  	<td>{{ care.client.client_name }}</td>
-                  	<td>{{ care.client.mobile }}</td>
+                  	<td>{{ care.fours }}</td>
+                  	<td>{{ care.client_name }}</td>
+                  	<td>{{ care.mobile }}</td>
                   	<td>{{ care.car_name }}</td>
-                  	<td>{{ care.product_name}}</td>
+                  	<td>{{ care.product_name}} 年</td>
                   	{% if care.check_status == 1 %}
                   		<td>未审核</td>
                   	{% elif care.check_status == 0 %}
                   		<td>审核通过</td>
                   	{% endif %}
-                  	<td><a href="/sale_confirm/?vin={{ care.vin }}">审核详情</a></td>
+                  	<td><a href="/sale_confirm/?sid={{ care.uid }}">审核详情</a></td>
                   </tr>
                   {% endfor %}
                   </tbody>

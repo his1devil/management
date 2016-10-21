@@ -183,7 +183,13 @@
 								<li>
 									<a href="/care_number/">
 										<i class="icon-double-angle-right"></i>
-										大保单号管理
+										保单号管理
+									</a>
+								</li>
+								<li>
+									<a href="/product_manage/">
+										<i class="icon-double-angle-right"></i>
+										设备管理
 									</a>
 								</li>
 							</ul>
@@ -310,7 +316,7 @@
 					              </div>
 
 					              <div class="form-group col-xs-3">
-					                <input type="text" name="beneman" id="beneman" class="form-control search-query" placeholder="第一受益人">
+					                <input type="text" name="beneman" id="beneman" class="form-control search-query" placeholder="贷款机构">
 					              </div>
 
 					              <div class="form-group col-xs-1">
@@ -350,9 +356,9 @@
                   <tr>
                   	<td>{{ care.care_number }}</td>
                   	<td>{{ care.pos_number }}</td>
-                  	<td>{{ care.client.fours }}</td>
-                  	<td>{{ care.client.client_name }}</td>
-                  	<td>{{ care.client.mobile}}</td>
+                  	<td>{{ care.fours }}</td>
+                  	<td>{{ care.client_name }}</td>
+                  	<td>{{ care.mobile}}</td>
                   	<td>{{ care.car_name }}</td>
                   	{% if care.check_status == 1 %}
                   		<td>未审核</td>
@@ -374,16 +380,16 @@
 
                   	{% if care.check_status == 1 %}
                   	{% if role == 'sale' %}
-                  	<td><button class="btn btn-info sub btn-xs showbtn" data-toggle="modal" data-target="#myModal" data-info="{{care.vin}}">查看</button> | <a href="/sale_edit/?id={{care.vin}}">修改</a></td>
+                  	<td><button class="btn btn-info sub btn-xs showbtn" data-toggle="modal" data-target="#myModal" data-info="{{care.uid}}">查看</button> | <a href="/sale_edit/?id={{care.uid}}">修改</a></td>
                   	{% elif role == 'admin' %}
 
-                  	<td style="color:#cccccc;"><button class="btn btn-info sub btn-xs showbtn" data-toggle="modal" data-target="#myModal" data-info="{{care.vin}}">查看</button> | 修改 | <button class="btn btn-info sub btn-xs deletesale" data-info="{{care.vin}}">删除</button></td>
+                  	<td style="color:#cccccc;"><button class="btn btn-info sub btn-xs showbtn" data-toggle="modal" data-target="#myModal" data-info="{{care.uid}}">查看</button> | 修改 | <button class="btn btn-info sub btn-xs deletesale" data-info="{{care.uid}}">删除</button></td>
                   	{% endif %}
                   	{% elif care.check_status == 0 %}
                   	{% if role == 'sale' %}
-                  	<td style="color:#cccccc;"><button class="btn btn-info sub btn-xs showbtn" data-toggle="modal" data-target="#myModal" data-info="{{care.vin}}">查看</button> | 修改</td>
+                  	<td style="color:#cccccc;"><button class="btn btn-info sub btn-xs showbtn" data-toggle="modal" data-target="#myModal" data-info="{{care.uid}}">查看</button> | 修改</td>
                   	{% elif role == 'admin' %}
-                  	<td><button class="btn btn-info sub btn-xs showbtn" data-toggle="modal" data-target="#myModal" data-info="{{care.vin}}">查看</button> | <a href="/sale_edit/?id={{care.vin}}">修改</a> | <button class="btn btn-info sub btn-xs deletesale" data-info="{{care.vin}}">删除</button></td>
+                  	<td><button class="btn btn-info sub btn-xs showbtn" data-toggle="modal" data-target="#myModal" data-info="{{care.uid}}">查看</button> | <a href="/sale_edit/?id={{care.uid}}">修改</a> | <button class="btn btn-info sub btn-xs deletesale" data-info="{{care.uid}}">删除</button></td>
                   	{% endif %}
                   	{% endif %}
                
@@ -392,7 +398,7 @@
                   	<td class="center" style="color:#cccccc;">打印</td>
                   	{% elif care.check_status == 0 %}
                   	<td class="center"><button type="button" class="btn btn-info sub btn-xs"  
-   onclick="window.open('/print_tpl?nu={{ care.care_number }}&render=printer','_new')">打印</button></td>
+   onclick="window.open('/print_tpl?id={{ care.uid }}&render=printer','_new')">打印</button></td>
                   	
                   	{% endif %}
                   </tr>
@@ -439,6 +445,7 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
+
 
 				</div><!-- /.table-responsive -->
 
@@ -517,9 +524,8 @@
 
 					$(".btn.btn-info.sub.btn-xs.showbtn").click(function(e) {
 						e.preventDefault();
-						var vin = $(this).data("info");
-						console.log(vin);
-						htmlobj = $.ajax({url:"/modal_show?vin="+vin,async:false});
+						var uid = $(this).data("info");
+						htmlobj = $.ajax({url:"/modal_show?id="+uid,async:false});
   						$(".modal-body").html("<pre>" + htmlobj.responseText + "</pre>");
   						
 					});
@@ -533,7 +539,7 @@
 							type: "POST",
 							url: "/saleinfo_delete/",
 							data: {
-								vin: info
+								sid: info
 							},
 							dataType: "json",
 							success: function(msg) {

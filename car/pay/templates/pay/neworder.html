@@ -43,14 +43,35 @@
 			.needed {color:red;}
 		</style>
 		<script type="text/javascript">
+		  function deleteTr(nowTr){ 
+            //多一个parent就代表向前一个标签, 
+            // 本删除范围为<td><tr>两个标签,即向前两个parent 
+            //如果多一个parent就会删除整个table 
+        	$(nowTr).parent().parent().remove(); 
+     		}
 			$(document).ready(function() {
-				$("#add").click(function(e) {
+				$("#addfirst").click(function(e) {
 					e.preventDefault();
-					var equipment = $("#equipment").val();
-					var quantity = $("#quantity").val();
-					$('<tr>').html("<td>"+ equipment +"</td><td>"+ quantity +"</td>").appendTo("#addtable");
+					var equipment = $("#firstequip option:selected").val();
+					var quantity = $("#firstquantity").val();
+					if (quantity != "") {
+						$('<tr>').html("<td>"+ equipment +"</td><td>"+ quantity +"</td><td>" + "<button class='btn btn-success sub btn-xs' onclick='deleteTr(this);'>删除</button>" + "</td>").appendTo("#addtable");
+					} else {
+						alert("需要填写数量有错误，请检查");
+						return false;
+					}
 				});
-
+				$("#addsecond").click(function(e) {
+					e.preventDefault();
+					var secondequipment = $("#secondequip option:selected").val();
+					var quantity = $("#secondquantity").val();
+					if (quantity != "") {
+						$('<tr>').html("<td>"+ secondequipment +"</td><td>"+ quantity +"</td><td>" + "<button class='btn btn-success sub btn-xs' onclick='deleteTr(this);'>删除</button>" + "</td>").appendTo("#addtable");
+					} else {
+						alert("需要填写数量有错误，请检查");
+						return false;
+					}
+				});
 				$('#smt').click(function(e) {
 					e.preventDefault();
 					var info = getTableData();
@@ -245,7 +266,13 @@
 								<li>
 									<a href="/care_number/">
 										<i class="icon-double-angle-right"></i>
-										大保单号管理
+										保单号管理
+									</a>
+								</li>
+								<li>
+									<a href="/product_manage/">
+										<i class="icon-double-angle-right"></i>
+										设备管理
 									</a>
 								</li>
 							</ul>
@@ -394,13 +421,29 @@
 
 									<div class="space-4"></div>
 									<div class="form-group">
-										<label class="col-sm-3 control-label no-padding-right" for="form-field-2"><span class="needed">* </span>设备名称</label>
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-2"><span class="needed"></span>主设备名称</label>
 										<div class="col-sm-9">
-											<input type="text" name="equipment" id="equipment" class="linkedinput" placeholder="填写设备名称">
-											<input type="text" name="quantity" id="quantity" class="linkedinput" placeholder="订购数量">
-											<button class="btn btn-info btn-sm" id="add">新增</a></button>
-										</div>
-										
+										<select name="firstequip" id="firstequip">
+										{% for first in firstproducts %}
+											<option value="{{first.first_product}}">{{first.first_product}}</option>
+										{% endfor %}
+										</select>
+											<input type="text" name="firstquantity" id="firstquantity" class="linkedinput" placeholder="订购数量">
+											<button class="btn btn-info btn-sm" id="addfirst">新增</a></button>	
+										</div>				
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-3 control-label no-padding-right" for="form-field-2"><span class="needed"></span>辅设备名称</label>
+										<div class="col-sm-9">
+										<select name="secondequip" id="secondequip">
+										{% for second in secondproducts %}
+											<option value="{{second.second_product}}">{{second.second_product}}</option>
+										{% endfor %}
+										</select>
+											<input type="text" name="secondquantity" id="secondquantity" class="linkedinput" placeholder="订购数量">
+											<button class="btn btn-info btn-sm" id="addsecond">新增</a></button>	
+										</div>				
 									</div>
 
 									<div class="space-4"></div>
@@ -408,7 +451,7 @@
 									<label class="col-sm-3 control-label no-padding-right" for="form-field-2">设备订购</label>
 										<div class="col-sm-5">
 											<table class="table table-bordered" id="addtable">
-											<thead> <tr><th>设备名称</th> <th>数量</th></tr> </thead> 
+											<thead> <tr><th>设备名称</th> <th>数量</th><th>操作</th></tr> </thead> 
 											<tbody>
 											</tbody> </table>
 										</div>

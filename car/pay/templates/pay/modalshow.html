@@ -1,3 +1,4 @@
+{% load split_filter %}
 <table class="table table-condensed">
                 
                   <thead>
@@ -13,22 +14,22 @@
                   </thead>
                   <tbody>
                   <tr>
-                  	<td>{{ care.client.fours }}</td>
-                  	{% if care.client.client_type == 'personal' %}
+                  	<td>{{ care.fours }}</td>
+                  	{% if care.client_type == 'personal' %}
                   	<td>个人客户</td>
-                  	{% elif care.client.client_type == 'company' %}
+                  	{% elif care.client_type == 'company' %}
                   	<td>公司客户</td>
                   	{% endif %}
-                  	<td>{{ care.client.client_name }}</td>
-                  	{% if care.client.identity_type == 'identity' %}
+                  	<td>{{ care.client_name }}</td>
+                  	{% if care.identity_type == 'identity' %}
                   	<td>身份证</td>
-                  	{% elif care.client.identity_type == 'passport' %}
+                  	{% elif care.identity_type == 'passport' %}
                   	<td>护照</td>
-                  	{% elif care.client.identity_type == 'driven' %}
+                  	{% elif care.identity_type == 'driven' %}
                   	<td>驾照</td>
                   	{% endif %}
-                  	<td>{{ care.client.identity_nu }}</td>
-                  	<td>{{ care.client.mobile }}</td>
+                  	<td>{{ care.identity_nu }}</td>
+                  	<td>{{ care.mobile }}</td>
                   </tr>
                   <tr></tr>
 				<thead>
@@ -43,11 +44,11 @@
                     </tr>
                   </thead>
                   <tr>
-                    <td>{{ care.client.prov }}</td>
-                  	<td>{{ care.client.city }}</td>
-                  	<td>{{ care.client.address }}</td>
+                    <td>{{ care.prov }}</td>
+                  	<td>{{ care.city }}</td>
+                  	<td>{{ care.address }}</td>
                   	<td>{{ care.financial }}</td>
-                  	<td>{{ care.product_name }}</td>
+                  	<td>{{ care.product_name }} 年</td>
                     <td>{{ care.car_name }}</td>
 
                   </tr>
@@ -107,7 +108,9 @@
                       <th>收款状态</th>
                       <th>安装状态</th>
                       <th>保险所需文件</th>
-                      
+                      <th></th>
+                      <th></th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tr>
@@ -121,7 +124,10 @@
                     {% elif care.install_status == 0 %}
                       <td>已安装</td>
                     {% endif %}
-                    <td>{% for file in files %}<a href="{{ file.files.url }}" target="_blank">{{ file.files.url| }}</a><br>{% endfor %}</td>
+                    <td>{% for file in files %}<a href="{{ file.files.url }}" target="_blank">{{ file.files.url|spl:"/" }}</a><br>{% endfor %}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                   </tr>
 
                   </tbody>

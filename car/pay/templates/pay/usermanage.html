@@ -67,6 +67,35 @@
 							}
 						})
 					}
+				});
+				// 修改密码
+				$(".btn.btn-success.sub.btn-xs.changedpw").click(function(e) {
+					e.preventDefault();
+					var id = $(this).data("info");
+					$("#changebutton").click(function(e) {
+						e.preventDefault();
+						var newpass = $("#newpass").val();
+						$.ajax({
+							type: "POST",
+							url: "/changepass/",
+							data: {
+								id: id,
+								passwd: newpass
+							},
+							dataType: "json",
+							success: function(msg) {
+							msg=msg.msg;
+							if (msg=='ok') {
+								alert("修改成功");
+								window.location.href="/user_manage/";
+							} else {
+								alert("修改失败，请重试");
+								window.location.href="/user_manage/";
+							}
+						}
+						})		
+					})					
+
 				})
 			})
 
@@ -207,7 +236,13 @@
 								<li>
 									<a href="/care_number/">
 										<i class="icon-double-angle-right"></i>
-										大保单号管理
+										保单号管理
+									</a>
+								</li>
+								<li>
+									<a href="/product_manage/">
+										<i class="icon-double-angle-right"></i>
+										设备管理
 									</a>
 								</li>
 							</ul>
@@ -324,13 +359,47 @@
                   	{% endif %}
                   	<td>{{ user.area }}</td>
                   	<td class="center">
-                  	<button data-info="{{ user.id }}" class='btn btn-success sub btn-xs deleted'>删除</button>
+                  	<button data-info="{{ user.id }}" class='btn btn-success sub btn-xs deleted'>删除</button> | <button data-info="{{ user.id }}" class="btn btn-success sub btn-xs changedpw" data-toggle="modal" href="#responsive">修改密码</button>
+
                   	</td>
                   </tr>
                   {% endfor %}
                   </tbody>
                   </table>
 				</div><!-- /.table-responsive -->
+
+<div class="modal fade" id="responsive" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:40%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">修改用户密码</h4>
+            </div>
+            <div class="modal-body">
+
+         <form class="form-horizontal" role="form" id="changepass">
+         {% csrf_token %}
+  <div class="form-group">
+    <label for="inputEmail3" class="col-sm-2 control-label">新密码</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="newpass">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="button" class="btn btn-default" id="changebutton">修改</button>
+    </div>
+  </div>
+</form>
+           
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+               
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
 
 									</div>
 

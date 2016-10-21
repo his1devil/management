@@ -43,6 +43,61 @@
 			.linkedinput {margin-right:0.3em;}
 			.needed {color:red;}
 		</style>
+			<script type="text/javascript">
+			$(document).ready(function() {
+				$(".btn.btn-success.sub.btn-xs.delfirst").click(function(e) {
+					e.preventDefault();
+					var id = $(this).data("info");
+					var cfm=confirm("确定要删除?");
+					if (cfm == true) {
+						$.ajax({
+							type: "POST",
+							url: "/first_del/",
+							data: {
+								firstid: id
+							},
+							dataType: "json",
+							success: function(msg) {
+								msg = msg.msg;
+								if (msg == 'ok') {
+									alert("删除成功");
+									window.location.href="/product_manage/";
+								} else {
+									alert("删除失败，请重试");
+									window.location.href="/product_manage/";
+								}
+							}
+						})
+					}
+				});
+				$(".btn.btn-success.sub.btn-xs.delsecond").click(function(e) {
+					e.preventDefault();
+					var id = $(this).data("info");
+					var cfm=confirm("确定要删除?");
+					if (cfm == true) {
+						$.ajax({
+							type: "POST",
+							url: "/second_del/",
+							data: {
+								secondid: id
+							},
+							dataType: "json",
+							success: function(msg) {
+								msg = msg.msg;
+								if (msg == 'ok') {
+									alert("删除成功");
+									window.location.href="/product_manage/";
+								} else {
+									alert("删除失败，请重试");
+									window.location.href="/product_manage/";
+								}
+							}
+						})
+					}
+				});
+			})
+
+		</script>
 	</head>
 
 	<body>
@@ -173,7 +228,7 @@
 										销售单审核
 									</a>
 								</li>
-								<li class="active">
+								<li>
 									<a href="/sale_assis/">
 										<i class="icon-double-angle-right"></i>
 										销售顾问管理
@@ -185,13 +240,12 @@
 										保单号管理
 									</a>
 								</li>
-								<li>
+								<li class="active">
 									<a href="/product_manage/">
 										<i class="icon-double-angle-right"></i>
 										设备管理
 									</a>
 								</li>
-								
 							</ul>
 						</li>
 
@@ -261,7 +315,7 @@
 								<i class="icon-home home-icon"></i>
 								<a href="#">首页</a>
 							</li>
-							<li class="active">销售顾问</li>
+							<li class="active">设备管理</li>
 						</ul><!-- .breadcrumb -->
 
 					</div>
@@ -272,7 +326,7 @@
 							<h4>
 								#
 								<small>
-									销售顾问管理
+									主辅设备管理
 								</small>
 							</h4>
 						</div>
@@ -280,60 +334,75 @@
 						<div class="row">
 							<div class="col-xs-12">
 								<!-- PAGE CONTENT BEGINS -->
-								<form class="form-inline" method="post" action="#">
+								<div class="col-xs-6">
+							<form class="form-inline" method="post" action="#">
 								{% csrf_token %}
-					              <div class="form-group col-xs-3">
-					                <input type="text" name="sname" id="sname" class="form-control search-query" placeholder="姓名">
-					              </div>
-					             <div class="form-group col-xs-3">
-					                <input type="text" name="idnumber" id="idnumber" class="form-control search-query" placeholder="身份证号">
-					              </div>					              
-					              <div class="form-group col-xs-3">
-					                <input type="text" name="mobile" id="mobile" class="form-control search-query" placeholder="电话号码">
+					              <div class="form-group col-xs-6">
+					                <input type="text" name="first" id="first" class="form-control search-query" placeholder="主设备">
 					              </div>
 					              <div class="form-group">
-					              	<button id="process" type="button" class="form-control search-btn btn btn-purple">保存</button>
-					              	
+					              	<button id="addfirst" type="button" class="form-control search-btn btn btn-purple">新增</button>
 					              </div> 
 					          </form>
+								</div>
+								<div class="col-xs-6">
+							<form class="form-inline" method="post" action="#">
+								{% csrf_token %}
+					              <div class="form-group col-xs-6">
+					                <input type="text" name="second" id="second" class="form-control search-query" placeholder="辅设备">
+					              </div>
+					              <div class="form-group">
+					              	<button id="addsecond" type="button" class="form-control search-btn btn btn-purple">新增</button>
+					              </div> 
+					          </form>
+								</div>
+								
 					<div class="row">
 
-					<div class="col-xs-12">
-					
-										
-										<div class="table-responsive" style="margin-top:1em;padding:0 12px;">
-											
+					<div class="col-xs-6">
+					<div class="table-responsive" style="margin-top:1em;padding:0 12px;">
                   <table id="user_selected" class="table table-striped table-bordered table-hover" style="margin-top:1em;">
                 
                   <thead>
                     <tr id="taghead">
-
-                      <th>姓名</th>
-                      <th>身份证号码</th>
-                      <th>电话号码</th>
-                      <th class="center">操作</th>
-                      <th class="center">操作</th>
+                      <th>主设备产品</th>
+                      <th>操作</th>
                     </tr>
                   </thead>
                   <tbody>
-                  {% for adviser in advisers %}
+                  {% for pro in firstproducts %}
                   <tr>
-                  	<td>{{ adviser.username }}</td>
-                  	<td>{{ adviser.idnumber }}</td>
-                  	<td>{{ adviser.mobile}}</td>
-                  	<td class="center"><a href="/assis_change/?id={{adviser.idnumber}}">修改</a></td>
-                  	<td class="center">
-                  	<button data-info="{{adviser.idnumber}}" class='btn btn-success sub btn-xs deleted'>删除</button>
-                  	</td>
+                  	<td>{{ pro.first_product }}</td>
+                  	<td><button class="btn btn-success sub btn-xs delfirst" data-info="{{pro.id}}">删除</button></td>
                   </tr>
                   {% endfor %}
                   </tbody>
                   </table>
 				</div><!-- /.table-responsive -->
 
-									</div>
-		
+				</div>
 
+					<div class="col-xs-6">
+						<div class="table-responsive" style="margin-top:1em;padding:0 12px;">
+							<table id="user_selected" class="table table-striped table-bordered table-hover" style="margin-top:1em;">
+                <thead>
+                    <tr id="taghead">
+
+                      <th>辅设备产品</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for pro in secondproducts %}
+                  <tr>
+                  	<td>{{ pro.second_product }}</td>
+                  	<td><button class="btn btn-success sub btn-xs delsecond" data-info="{{pro.id}}">删除</button></td>
+                  </tr>
+                  {% endfor %}
+                  </tbody>
+                  </table>
+				</div><!-- /.table-responsive -->
+						</div>
 									</div><!-- /row -->
 
 								<!-- PAGE CONTENT ENDS -->
@@ -401,69 +470,61 @@
 		<script src="{% static 'pay/js/ace.min.js' %}"></script>
 		<script type="text/javascript">
 			$(document).ready(function() {
-				$('.date-picker').datepicker({autoclose:true}).next().on(ace.click_event, function(){
-				$(this).prev().focus();
-				});
-
-				$("#process").click(function(e) {
+				$("#addfirst").click(function(e) {
 					e.preventDefault();
-					var sname = $("#sname").val();
-					var idnumber = $("#idnumber").val();
-					var mobile = $("#mobile").val();
-					if (sname == '' || idnumber == '' || mobile == '') {
-						alert("字段不能为空，请重新填写");
+					var first = $("#first").val();
+					if (first == '') {
+						alert("主设备名称不能为空，请重新填写!");
 						return false;
 					} else {
 						$.ajax({
 							type: "POST",
-							url: "/assis_process/",
+							url: "/add_first/",
 							data: {
-								sname: sname,
-								idnumber: idnumber,
-								mobile: mobile,
+								first: first
 							},
 							dataType: "json",
 							success: function(msg) {
 								msg = msg.msg;
 								if (msg=='ok') {
 									alert("保存成功");
-									window.location.href="/sale_assis/";
+									window.location.reload();
 								} else {
-									alert("保存失败，信息或许重复，请重试");
+									alert("保存失败，请重试");
 									return false;
 								}
 							}
 						})
 					}
 				});
-
-				$(".btn.btn-success.sub.btn-xs.deleted").click(function(e) {
+				$("#addsecond").click(function(e) {
 					e.preventDefault();
-					var info = $(this).data("info");
-					var cfm=confirm("确定要删除?");
-					if (cfm == true) {
+					var second = $("#second").val();
+					if (second == '') {
+						alert("辅设备名称不能为空，请重新填写!");
+						return false;
+					} else {
 						$.ajax({
 							type: "POST",
-							url: "/assis_delete/",
+							url: "/add_second/",
 							data: {
-								idnumber: info
+								second: second
 							},
 							dataType: "json",
 							success: function(msg) {
 								msg = msg.msg;
-								if (msg == 'ok') {
-									alert("删除成功");
-									window.location.href="/sale_assis/";
+								if (msg=='ok') {
+									alert("保存成功");
+									window.location.reload();
 								} else {
-									alert("删除失败，请重试");
-									window.location.href="/sale_assis/";
+									alert("保存失败，请重试");
+									return false;
 								}
 							}
 						})
 					}
 				})
 			})
-
 		</script>
 </html>
 
