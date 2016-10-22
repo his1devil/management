@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 # 数据库
-from pay.models import Users, Orders, Clients, OrdersInfo, Safe, Uploaded, Vin, Adviser, CareNu
+from pay.models import Users, Orders, Clients, OrdersInfo, Safe, Uploaded, Vin, Adviser, CareNu, Firstproduct, Secondproduct
 
 # 数据分页
 from django.core.paginator import Paginator
@@ -25,6 +25,7 @@ import json
 import datetime
 import urllib
 import xlsxwriter
+import uuid
 try:
 	import cStringIO as StringIO
 except ImportError:
@@ -309,7 +310,15 @@ def verify_smt(request):
 def new_order(request):
 	username = request.session.get('username')
 	if username:
-		return render(request, 'pay/neworder.html', {'username': username})
+		role = permission_check(username)
+		if role != 'sale':
+			firstproducts = Firstproduct.objects.all()
+			secondproducts = Secondproduct.objects.all()
+			return render(request, 'pay/neworder.html', {'username': username, 'firstproducts': firstproducts, 'secondproducts': secondproducts})
+		else:
+			return render(request, 'pay/403.html',
+							{'username': username,
+							'role': role}) 
 	else:
 		return HttpResponseRedirect('/login')
 
@@ -454,7 +463,7 @@ def sale(request):
 			carenumber = request.GET.get('carenumber')
 			clientname = request.GET.get('clientname')
 			if clientname:
-				clientname = request.GET.get('clientname')
+				clientname = request.GET.get('clientname').encode('utf8')
 			carname = request.GET.get('carname')
 			if carname:
 				carname = request.GET.get('carname').encode('utf8') 
@@ -473,7 +482,7 @@ def sale(request):
 				datefrom = datetime.datetime.strptime(datefrom, '%Y-%m-%d')
 			if dateto is not None and dateto != '' and dateto != 'None':
 				dateto = datetime.datetime.strptime(dateto, '%Y-%m-%d')
-			searchCondition = {'care_number__icontains': carenumber, 'client__client_name__icontains': clientname, 'car_name': carname, 'sale_man__icontains': saleman, 'first_benefit__icontains': beneman, 'sale_date__gt': datefrom, 'sale_date__lt': dateto}
+			searchCondition = {'care_number__icontains': carenumber, 'client_name__icontains': clientname, 'car_name': carname, 'sale_man__icontains': saleman, 'financial__icontains': beneman, 'sale_date__gt': datefrom, 'sale_date__lt': dateto}
 			kwargs = getCondition(searchCondition)
 			query = {'cnumber': carenumber, 'cname': clientname, 'carname': carname, 'sman': saleman, 'bman': beneman, 'from': start_date, 'to': end_date}
 			query = getCondition(query)
@@ -498,7 +507,7 @@ def sale(request):
 							'carelist': carelist})
 			elif role == 'sale':
 				u = Users.objects.get(username=username)
-				carelist = Safe.objects.filter(**kwargs).filter(client__fours__contains=u.area).order_by('-id')
+				carelist = Safe.objects.filter(**kwargs).filter(fours__contains=u.area).order_by('-id')
 				paginator = Paginator(carelist, limit)
 				# 获取页数
 				page = request.GET.get('page')
@@ -535,14 +544,24 @@ def add_sale(request):
 		if role == 'sale':
 			u = Users.objects.get(username=username)
 			adviserlist = Adviser.objects.filter(area=u)
+			firstproducts = Firstproduct.objects.all()
+			secondproducts = Secondproduct.objects.all()
 			return render(request, 'pay/newsale.html',
 						{'username': username,
 						'role': role,
-						'adviserlist': adviserlist})
+						'adviserlist': adviserlist,
+						'firstproducts': firstproducts,
+						'secondproducts': secondproducts
+						})
 		elif role == 'admin':
+			firstproducts = Firstproduct.objects.all()
+			secondproducts = Secondproduct.objects.all()
 			return render(request, 'pay/newsale.html',
 						{'username': username,
-						'role': role})
+						'role': role,
+						'firstproducts': firstproducts,
+						'secondproducts': secondproducts
+						})
 		else:
 			return render(request, 'pay/403.html',
 						{'username': username,
@@ -557,6 +576,8 @@ def upload(request):
 	username = request.session.get('username')
 	if username:
 		if request.method == "POST":
+			# 唯一订单号
+			unique = uuid.uuid1()
 			# 客户信息
 			clienttype = request.POST.get('clienttype')
 			clientname = request.POST.get('clientname')
@@ -594,7 +615,6 @@ def upload(request):
 			carnumber = request.POST.get('carnumber')
 			# 销售顾问
 			saleman = request.POST.get('saleman')			
-			beneman = request.POST.get('beneman')
 			fileslist = request.FILES.getlist('files')
 			# 获取用户地区
 			try:
@@ -602,15 +622,15 @@ def upload(request):
 			except ObjectDoesNotExist:
 				area = 'None'
 			# 保存客户信息到Clients
-			Clients(fours=area, client_type=clienttype, client_name=clientname, identity_type=idtype, identity_nu=idnumber, prov=prov, city=city, address=address, mobile=mobile).save()
+			#Clients(fours=area, client_type=clienttype, client_name=clientname, identity_type=idtype, identity_nu=idnumber, prov=prov, city=city, address=address, mobile=mobile).save()
 			# 获取client ID号码作为外键
-			client = Clients.objects.get(identity_nu=idnumber)
+			#client = Clients.objects.get(identity_nu=idnumber)
 			# 保存到投保单中
-			Safe(writer=username, client=client, financial=fcompany, product_name=productname, equip_name=equipname, second_equip_name=secondequipname, car_name=carname, car_type=cartype,  buycar_date=startdate, car_price=carprice, price=price, vin=vin, car_number=carnumber, sale_man=saleman, buy_type=buytype, first_benefit=beneman).save()
+			Safe(uid=unique, fours=area, client_type=clienttype, client_name=clientname, identity_type=idtype, identity_nu=idnumber, prov=prov, city=city, address=address, mobile=mobile, writer=username, financial=fcompany, product_name=productname, equip_name=equipname, second_equip_name=secondequipname, car_name=carname, car_type=cartype,  buycar_date=startdate, car_price=carprice, price=price, vin=vin, car_number=carnumber, sale_man=saleman, buy_type=buytype).save()
 			# 获取 vin 作为外键保存
-			objvin = Safe.objects.get(vin=vin)
+			objvin = Safe.objects.get(uid=unique)
 			for file in fileslist:
-				Uploaded(vin=objvin, files=file).save()
+				Uploaded(uid=objvin, files=file).save()
 			# bulk_create优化
 			#for file in fileslist:
 				#Uploaded.objects.filter(vin=vin).update(files=file)
@@ -659,10 +679,10 @@ def sale_confirm(request):
 		if request.method == 'GET':
 			role = permission_check(username)
 			if role == 'admin':
-				vin = request.GET.get('vin')
+				uid = request.GET.get('sid')
 				try:
-					care = Safe.objects.get(vin=vin)
-					files = Uploaded.objects.filter(vin=care)
+					care = Safe.objects.get(uid=uid)
+					files = Uploaded.objects.filter(uid=care)
 					cnu = CareNu.objects.all()
 				except ObjectDoesNotExist:
 					care = []
@@ -684,7 +704,7 @@ def sale_verify(request):
 	username = request.session.get('username')
 	if username:
 		if request.method == "POST":
-			vin = request.POST.get('vin')
+			uid = request.POST.get('uid')
 			bcarenu = request.POST.get('bcarenu')
 			carenumber = request.POST.get('carenumber')
 			posnumber = request.POST.get('posnumber')
@@ -693,7 +713,7 @@ def sale_verify(request):
 			check_status = request.POST.get('check_status')
 			bcarenuobj = CareNu.objects.get(b_care_number=bcarenu)
 			# 存入数据库
-			Safe.objects.filter(vin=vin).update(b_care_number=bcarenuobj, care_number=carenumber, pos_number=posnumber, sale_status=sale_status, install_status=install_status, check_status=check_status)
+			Safe.objects.filter(uid=uid).update(b_care_number=bcarenuobj, care_number=carenumber, pos_number=posnumber, sale_status=sale_status, install_status=install_status, check_status=check_status)
 			try:
 				s = Safe.objects.get(care_number=carenumber)
 				return HttpResponse(json.dumps({"msg": "ok"}))
@@ -711,17 +731,22 @@ def sale_edit(request):
 		role = permission_check(username)
 		if role != 'repo':
 			if request.method == 'GET':
-				vin = request.GET.get('id')
-				care = Safe.objects.get(vin=vin)
+				uid = request.GET.get('id')
+				care = Safe.objects.get(uid=uid)
 				u = Users.objects.get(username=username)
 				adviserlist = Adviser.objects.filter(area=u)
-				safefiles = Uploaded.objects.filter(vin=care)
+				safefiles = Uploaded.objects.filter(uid=care)
+				firstproducts = Firstproduct.objects.all()
+				secondproducts = Secondproduct.objects.all()
 				return render(request, 'pay/saleedit.html',
 						{'username': username,
 						'care': care,
 						'adviserlist': adviserlist,
 						'safefiles': safefiles,
-						'role': role})
+						'role': role,
+						'firstproducts':firstproducts,
+						'secondproducts': secondproducts
+						})
 
 		else:
 			return render(request, 'pay/403.html',
@@ -769,7 +794,7 @@ def sale_edit_save(request):
 			vin = request.POST.get('vin')
 			carnumber = request.POST.get('carnumber')
 			saleman = request.POST.get('saleman')
-			beneman = request.POST.get('beneman')
+			#beneman = request.POST.get('beneman')
 			fileslist = request.FILES.getlist('files')
 			# client id
 			cid = request.POST.get('cid')
@@ -781,15 +806,15 @@ def sale_edit_save(request):
 			except ObjectDoesNotExist:
 				area = 'None'
 			# 保存客户信息到Clients
-			Clients.objects.filter(id=cid).update(fours=area, client_type=clienttype, client_name=clientname, identity_type=idtype, identity_nu=idnumber, prov=prov, city=city, address=address, mobile=mobile)
+			#Clients.objects.filter(id=cid).update(fours=area, client_type=clienttype, client_name=clientname, identity_type=idtype, identity_nu=idnumber, prov=prov, city=city, address=address, mobile=mobile)
 			# 获取client ID号码作为外键
-			client = Clients.objects.get(identity_nu=idnumber)
+			#client = Clients.objects.get(identity_nu=idnumber)
 			# 保存到投保单中
-			Safe.objects.filter(id=sid).update(client=client, financial=fcompany, product_name=productname, car_type=cartype, equip_name=equipname, second_equip_name=secondequipname, car_name=carname, buycar_date=startdate,car_price=carprice, price=price, vin=vin, car_number=carnumber, sale_man=saleman, buy_type=buytype, first_benefit=beneman)
+			Safe.objects.filter(id=sid).update(fours=area, client_type=clienttype, client_name=clientname, identity_type=idtype, identity_nu=idnumber, prov=prov, city=city, address=address, mobile=mobile, financial=fcompany, product_name=productname, car_type=cartype, equip_name=equipname, second_equip_name=secondequipname, car_name=carname, buycar_date=startdate,car_price=carprice, price=price, vin=vin, car_number=carnumber, sale_man=saleman, buy_type=buytype)
 			# 获取 vin 作为外键保存
-			objvin = Safe.objects.get(vin=vin)
+			objvin = Safe.objects.get(id=sid)
 			for file in fileslist:
-				Uploaded(vin=objvin, files=file).save()
+				Uploaded(uid=objvin, files=file).save()
 			# bulk_create优化
 			#for file in fileslist:
 				#Uploaded.objects.filter(vin=vin).update(files=file)
@@ -823,17 +848,15 @@ def print_tpl(request):
 		role = permission_check(username)
 		if role != 'repo':
 			if request.method == 'GET':
-				carenumber = request.GET.get('nu')
+				#carenumber = request.GET.get('nu')
+				uid = request.GET.get('id')
 				try:
-					care = Safe.objects.get(care_number=carenumber)
-					client = care.client
+					care = Safe.objects.get(uid=uid)
 				except ObjectDoesNotExist, MultipleObjectsReturned:
 					care = []
-					client = []
 				return render(request, 'pay/tpl.html',
 							{'username': username,
 							'care': care,
-							'client': client,
 							'role': role})
 
 		else:
@@ -849,10 +872,10 @@ def modal_show(request):
 	if username:
 		role = permission_check(username)
 		if role != 'repo':
-			vin = request.GET.get('vin')
+			sid = request.GET.get('id')
 			try:
-				care = Safe.objects.get(vin=vin)
-				files = Uploaded.objects.filter(vin=care)
+				care = Safe.objects.get(uid=sid)
+				files = Uploaded.objects.filter(uid=care)
 			except ObjectDoesNotExist:
 				care = []
 			return render(request, 'pay/modalshow.html',
@@ -906,34 +929,33 @@ def export(request):
 			 	u"发动机号码",
 			 	u"销售顾问",
 			 	u"购车类型",
-			 	u"第一受益人",
 			 	u"审核状态",
 			 	u"销售状态",
 			 	u"安装状态",
 			 ]
-			for i in range(28):
+			for i in range(27):
 				worksheet.write(0, i, header[i])
 			for obj in objs:
-				if obj.client.identity_type=="identity":
+				if obj.identity_type=="identity":
 					iden = u"身份证"
-				elif obj.client.identity_type=="passport":
+				elif obj.identity_type=="passport":
 					iden = u"护照"
-				elif obj.client.identity_type=="driven":
+				elif obj.identity_type=="driven":
 					iden = u"驾照"
 				else:
 					iden = "None"
 				fields = [
 			 		#(obj.writer,),
-			 		(obj.client.fours,),
+			 		(obj.fours,),
 			 		(obj.care_number,),
 			 		(obj.pos_number,),
-			 		(obj.client.client_name,),
+			 		(obj.client_name,),
 			 		(iden,),
-			 		(obj.client.identity_nu,),
-			 		(obj.client.prov,),
-			 		(obj.client.city,),
-			 		(obj.client.address,),
-			 		(obj.client.mobile,),
+			 		(obj.identity_nu,),
+			 		(obj.prov,),
+			 		(obj.city,),
+			 		(obj.address,),
+			 		(obj.mobile,),
 			 		(str(obj.sale_date),),
 			 		(obj.financial,),
 			 		(obj.product_name,),
@@ -948,13 +970,12 @@ def export(request):
 			 		(obj.car_number,),
 			 		(obj.sale_man,),
 			 		(u"全款" if obj.buy_type=="fullpay" else u"贷款",),
-			 		(obj.first_benefit,),
 			 		(u"未审核" if obj.check_status==1 else u"已审核",),
 			 		(u"未销售" if obj.sale_status==1 else u"已销售",),
 			 		(u"未安装" if obj.install_status==1 else u"已安装",)
 			 	]
 			 	print fields
-			 	for n in range(28):
+			 	for n in range(27):
 			 		worksheet.write(col, row+n, *(fields[n]))
 				col += 1
 			xlsxdata.close()
@@ -1048,6 +1069,80 @@ def add_user(request):
 	else:
 		return HttpResponse(json.dumps({"msg": "failed"}))
 
+# 产品管理
+def product_manage(request):
+	username = request.session.get('username')
+	if username:
+		role = permission_check(username)
+		if role == 'admin':
+			f = Firstproduct.objects.all()
+			s = Secondproduct.objects.all()
+			return render(request, 'pay/products.html',
+						{'username': username,
+						'role': role,
+						'firstproducts': f,
+						'secondproducts': s
+						})
+		else:
+			return render(request, 'pay/403.html',
+						{'username': username,
+						'role': role})
+	else:
+		return HttpResponseRedirect('/login')
+
+# 添加设备名称
+@csrf_exempt
+def add_first(request):
+	if request.method == "POST":
+		first = request.POST.get('first')
+		if first:
+			f = Firstproduct(first_product=first)
+			f.save()
+			return HttpResponse(json.dumps({"msg": "ok"}))
+		else:
+			return HttpResponse(json.dumps({"msg": "failed"}))
+	else:
+		return HttpResponse(json.dumps({"msg": "failed"}))
+
+@csrf_exempt
+def add_second(request):
+	if request.method == "POST":
+		second = request.POST.get('second')
+		if second:
+			s = Secondproduct(second_product=second)
+			s.save()
+			return HttpResponse(json.dumps({"msg": "ok"}))
+		else:
+			return HttpResponse(json.dumps({"msg": "failed"}))
+	else:
+		return HttpResponse(json.dumps({"msg": "failed"}))
+
+# 主辅产品删除
+@csrf_exempt
+def first_del(request):
+	if request.method == "POST":
+		firstid = request.POST.get('firstid')
+		if firstid:
+			f = Firstproduct.objects.get(id=firstid)
+			f.delete()
+			return HttpResponse(json.dumps({"msg": "ok"}))
+		else:
+			return HttpResponse(json.dumps({"msg": "failed"}))
+	else:
+		return HttpResponse(json.dumps({"msg": "failed"}))
+
+@csrf_exempt
+def second_del(request):
+	if request.method == "POST":
+		secondid = request.POST.get('secondid')
+		if secondid:
+			s = Secondproduct.objects.get(id=secondid)
+			s.delete()
+			return HttpResponse(json.dumps({"msg": "ok"}))
+		else:
+			return HttpResponse(json.dumps({"msg": "failed"}))
+	else:
+		return HttpResponse(json.dumps({"msg": "failed"}))
 
 # 销售顾问管理
 def sale_assis(request):
@@ -1091,6 +1186,22 @@ def assis_process(request):
 		return HttpResponse(json.dumps({"msg":"ok"}))
 	else:
 		return HttpResponse(json.dumps({"msg":"ok"}))
+
+# 管理员修改用户密码
+@csrf_exempt
+def changepass(request):
+	username = request.session.get('username')
+	if username:
+		if request.method == 'POST':
+			newpass = request.POST.get('passwd')
+			userid = request.POST.get('id')
+			try:
+				Users.objects.filter(id=userid).update(password=newpass)
+				return HttpResponse(json.dumps({"msg":"ok"}))
+			except ObjectDoesNotExist:
+				return HttpResponse(json.dumps({"msg":"failed"})) 
+	else:
+		return HttpResponse(json.dumps({"msg":"failed"})) 
 
 # 销售顾问修改
 def assis_change(request):
@@ -1159,8 +1270,10 @@ def safefile_delete(request):
 		if request.method == 'POST':
 			file = request.POST.get('file')
 			vin = request.POST.get('vin')
+			uid = request.POST.get('uid')
+			print uid
 			try:
-				Uploaded.objects.filter(vin__vin__icontains=vin).get(files=file).delete()
+				Uploaded.objects.filter(uid__uid__icontains=uid).get(files=file).delete()
 				return HttpResponse(json.dumps({"msg":"ok"}))
 			except:
 				return HttpResponse(json.dumps({"msg":"failed"}))
@@ -1233,9 +1346,9 @@ def saleinfo_delete(request):
 	role = permission_check(username)
 	if role == 'admin':
 		if request.method == 'POST':
-			vin = request.POST.get('vin')
+			uid = request.POST.get('sid')
 			try:
-				Safe.objects.get(vin=vin).delete()
+				Safe.objects.get(uid=uid).delete()
 				return HttpResponse(json.dumps({"msg":"ok"}))
 			except:
 				return HttpResponse(json.dumps({"msg":"failed"}))
