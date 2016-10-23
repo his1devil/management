@@ -78,6 +78,7 @@ class OrdersInfo(models.Model):
 
 # 投保用户表
 class Clients(models.Model):
+	#uid = models.ForeignKey(Safe)
 	fours = models.CharField(max_length=50, blank=True, null=True)
 	client_type = models.CharField(max_length=50)
 	client_name = models.CharField(max_length=50)
@@ -93,8 +94,28 @@ class Clients(models.Model):
 class CareNu(models.Model):
 	b_care_number = models.CharField(max_length=50, blank=True, null=True)
 
+# 产品表格
+class Firstproduct(models.Model):
+	first_product = models.CharField(max_length=50, blank=True, null=True)
+
+class Secondproduct(models.Model):
+	second_product = models.CharField(max_length=50, blank=True, null=True)
+
 # 投保信息
 class Safe(models.Model):
+	# 唯一编码号
+	uid = models.CharField(max_length=128, blank=True, null=True)
+	fours = models.CharField(max_length=50, blank=True, null=True)
+	client_type = models.CharField(max_length=50, blank=True, null=True)
+	client_name = models.CharField(max_length=50, blank=True, null=True)
+	identity_type = models.CharField(max_length=50, blank=True, null=True)
+	identity_nu = models.CharField(max_length=128, blank=True, null=True)
+	# 联系地址分段
+	prov = models.CharField(max_length=50, null=True, blank=True)
+	city = models.CharField(max_length=50, null=True, blank=True)
+	address = models.CharField(max_length=128, null=True, blank=True)
+	mobile = models.CharField(max_length=50, null=True, blank=True)
+	
 	# 管理者
 	writer = models.CharField(max_length=50, blank=True, null=True)
 	# 大保单号码
@@ -103,7 +124,7 @@ class Safe(models.Model):
 	care_number = models.CharField(max_length=50, blank=True, null=True)
 	# POS机交易码
 	pos_number = models.CharField(max_length=50, blank=True, null=True)
-	client = models.ForeignKey(Clients)
+	#client = models.ForeignKey(Clients)
 	# 销售日期
 	sale_date = models.DateTimeField(auto_now=True)
 	# 贷款金融机构
@@ -133,7 +154,7 @@ class Safe(models.Model):
 	# 购车类型
 	buy_type = models.CharField(max_length=50)
 	# 第一受益人
-	first_benefit = models.CharField(max_length=50)
+	first_benefit = models.CharField(max_length=50, blank=True, null=True)
 	# 审核状态
 	check_status = models.IntegerField(default=1)
 	# 销售状态
@@ -149,12 +170,12 @@ class Vin(models.Model):
 # 保存文件目录生成
 def user_directory_path(instance, filename):
 	# file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-	return 'vin_{0}/{1}'.format(instance.vin.vin, filename)
+	return 'vin_{0}/{1}'.format(instance.uid.vin, filename)
 
 # 测试上传文件
 class Uploaded(models.Model):
 	#files = models.FileField(upload_to='documents/%Y/%m/%d', blank=True, null=True)
-	vin = models.ForeignKey(Safe)
+	uid = models.ForeignKey(Safe)
 	files = models.FileField(upload_to=user_directory_path, blank=True, null=True)
 
 admin.site.register(Users)
