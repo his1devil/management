@@ -83,6 +83,8 @@ urlpatterns = [
 	url(r'^user_manage/$', views.user_manage, name='user_manage'),
 	# 用户删除
 	url(r'^user_delete/$', views.user_delete, name='user_delete'),
+	# 给用户修改密码
+	url(r'^changepass/$', views.changepass, name='changepass'),
 	# 密码修改
 	url(r'^change_pw/$', views.change_pw, name='change_pw'),
 	url(r'^change/$', views.change, name='change'),
@@ -93,6 +95,13 @@ urlpatterns = [
 	url(r'^bcare_process/$', views.bcare_process, name='bcare_process'),
 	# 销售信息删除
 	url(r'^saleinfo_delete/$', views.saleinfo_delete, name='saleinfo_delete'),
-
+	# 产品新增
+	url(r'^product_manage/$', views.product_manage, name='product_manage'),
+	# 主辅产品新增
+	url(r'^add_first/$', views.add_first, name='add_first'),
+	url(r'^add_second/$', views.add_second, name='add_second'),
+	# 主辅产品删除
+	url(r'^first_del/$', views.first_del, name='first_del'),
+	url(r'^second_del/$', views.second_del, name='second_del'),
 
 ]
