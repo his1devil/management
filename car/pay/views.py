@@ -614,7 +614,9 @@ def upload(request):
 			# 发动机号码
 			carnumber = request.POST.get('carnumber')
 			# 销售顾问
-			saleman = request.POST.get('saleman')			
+			saleman = request.POST.get('saleman')
+			# 设备编码
+			equipnumber = request.POST.get('equipnumber')		
 			fileslist = request.FILES.getlist('files')
 			# 获取用户地区
 			try:
@@ -626,7 +628,7 @@ def upload(request):
 			# 获取client ID号码作为外键
 			#client = Clients.objects.get(identity_nu=idnumber)
 			# 保存到投保单中
-			Safe(uid=unique, fours=area, client_type=clienttype, client_name=clientname, identity_type=idtype, identity_nu=idnumber, prov=prov, city=city, address=address, mobile=mobile, writer=username, financial=fcompany, product_name=productname, equip_name=equipname, second_equip_name=secondequipname, car_name=carname, car_type=cartype,  buycar_date=startdate, car_price=carprice, price=price, vin=vin, car_number=carnumber, sale_man=saleman, buy_type=buytype).save()
+			Safe(uid=unique, fours=area, client_type=clienttype, client_name=clientname, identity_type=idtype, identity_nu=idnumber, prov=prov, city=city, address=address, mobile=mobile, writer=username, equip_number = equipnumber, financial=fcompany, product_name=productname, equip_name=equipname, second_equip_name=secondequipname, car_name=carname, car_type=cartype,  buycar_date=startdate, car_price=carprice, price=price, vin=vin, car_number=carnumber, sale_man=saleman, buy_type=buytype).save()
 			# 获取 vin 作为外键保存
 			objvin = Safe.objects.get(uid=unique)
 			for file in fileslist:
@@ -779,6 +781,7 @@ def sale_edit_save(request):
 			productname = request.POST.get('productname')
 			cartype = request.POST.get('cartype')
 			equipname = request.POST.get('equipname')
+			equipnumber = request.POST.get('equipnumber')
 			# 辅助设备名称
 			secondequipname = request.POST.get('secondequip')
 			# 初始购车日期
@@ -810,7 +813,7 @@ def sale_edit_save(request):
 			# 获取client ID号码作为外键
 			#client = Clients.objects.get(identity_nu=idnumber)
 			# 保存到投保单中
-			Safe.objects.filter(id=sid).update(fours=area, client_type=clienttype, client_name=clientname, identity_type=idtype, identity_nu=idnumber, prov=prov, city=city, address=address, mobile=mobile, financial=fcompany, product_name=productname, car_type=cartype, equip_name=equipname, second_equip_name=secondequipname, car_name=carname, buycar_date=startdate,car_price=carprice, price=price, vin=vin, car_number=carnumber, sale_man=saleman, buy_type=buytype)
+			Safe.objects.filter(id=sid).update(fours=area, client_type=clienttype, client_name=clientname, identity_type=idtype, identity_nu=idnumber, prov=prov, city=city, address=address, mobile=mobile, equip_number=equipnumber, financial=fcompany, product_name=productname, car_type=cartype, equip_name=equipname, second_equip_name=secondequipname, car_name=carname, buycar_date=startdate,car_price=carprice, price=price, vin=vin, car_number=carnumber, sale_man=saleman, buy_type=buytype)
 			# 获取 vin 作为外键保存
 			objvin = Safe.objects.get(id=sid)
 			for file in fileslist:
@@ -852,11 +855,13 @@ def print_tpl(request):
 				uid = request.GET.get('id')
 				try:
 					care = Safe.objects.get(uid=uid)
+					bcare = CareNu.objects.all()
 				except ObjectDoesNotExist, MultipleObjectsReturned:
 					care = []
-				return render(request, 'pay/tpl.html',
+				return render(request, 'pay/tpled.html',
 							{'username': username,
 							'care': care,
+							'bcare': bcare,
 							'role': role})
 
 		else:
@@ -920,6 +925,7 @@ def export(request):
 			 	u"产品名称",
 			 	u"主设备名称",
 			 	u"辅设备名称",
+			 	u"设备号",
 			 	u"车辆品牌",
 			 	u"车辆型号",
 			 	u"初始购车日期",
@@ -933,7 +939,7 @@ def export(request):
 			 	u"销售状态",
 			 	u"安装状态",
 			 ]
-			for i in range(27):
+			for i in range(28):
 				worksheet.write(0, i, header[i])
 			for obj in objs:
 				if obj.identity_type=="identity":
@@ -961,6 +967,7 @@ def export(request):
 			 		(obj.product_name,),
 			 		(obj.equip_name,),
 			 		(obj.second_equip_name,),
+			 		(obj.equip_number if obj.equip_number else u"暂时没有填写",),
 			 		(obj.car_name,),
 			 		(obj.car_type,),
 			 		(obj.buycar_date, date_format),
@@ -975,7 +982,7 @@ def export(request):
 			 		(u"未安装" if obj.install_status==1 else u"已安装",)
 			 	]
 			 	print fields
-			 	for n in range(27):
+			 	for n in range(28):
 			 		worksheet.write(col, row+n, *(fields[n]))
 				col += 1
 			xlsxdata.close()
