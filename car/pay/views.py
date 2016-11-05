@@ -623,12 +623,13 @@ def upload(request):
 				area = Users.objects.get(username=username).area
 			except ObjectDoesNotExist:
 				area = 'None'
+			agent = Users.objects.get(username=username).agent
 			# 保存客户信息到Clients
 			#Clients(fours=area, client_type=clienttype, client_name=clientname, identity_type=idtype, identity_nu=idnumber, prov=prov, city=city, address=address, mobile=mobile).save()
 			# 获取client ID号码作为外键
 			#client = Clients.objects.get(identity_nu=idnumber)
 			# 保存到投保单中
-			Safe(uid=unique, fours=area, client_type=clienttype, client_name=clientname, identity_type=idtype, identity_nu=idnumber, prov=prov, city=city, address=address, mobile=mobile, writer=username, equip_number = equipnumber, financial=fcompany, product_name=productname, equip_name=equipname, second_equip_name=secondequipname, car_name=carname, car_type=cartype,  buycar_date=startdate, car_price=carprice, price=price, vin=vin, car_number=carnumber, sale_man=saleman, buy_type=buytype).save()
+			Safe(uid=unique, fours=area, agent=agent, client_type=clienttype, client_name=clientname, identity_type=idtype, identity_nu=idnumber, prov=prov, city=city, address=address, mobile=mobile, writer=username, equip_number = equipnumber, financial=fcompany, product_name=productname, equip_name=equipname, second_equip_name=secondequipname, car_name=carname, car_type=cartype,  buycar_date=startdate, car_price=carprice, price=price, vin=vin, car_number=carnumber, sale_man=saleman, buy_type=buytype).save()
 			# 获取 vin 作为外键保存
 			objvin = Safe.objects.get(uid=unique)
 			for file in fileslist:
@@ -910,7 +911,8 @@ def export(request):
 			col = 1
 			row = 0
 			header = [
-			 	u"代理商",
+			 	u"4S店名称",
+			 	u"代理商名称",
 			 	u"保单号",
 			 	u"POS机交易码",
 			 	u"客户姓名",
@@ -939,7 +941,7 @@ def export(request):
 			 	u"销售状态",
 			 	u"安装状态",
 			 ]
-			for i in range(28):
+			for i in range(29):
 				worksheet.write(0, i, header[i])
 			for obj in objs:
 				if obj.identity_type=="identity":
@@ -953,6 +955,7 @@ def export(request):
 				fields = [
 			 		#(obj.writer,),
 			 		(obj.fours,),
+			 		(obj.agent if obj.agent else u"暂时没有填写",),
 			 		(obj.care_number,),
 			 		(obj.pos_number,),
 			 		(obj.client_name,),
@@ -981,8 +984,7 @@ def export(request):
 			 		(u"未销售" if obj.sale_status==1 else u"已销售",),
 			 		(u"未安装" if obj.install_status==1 else u"已安装",)
 			 	]
-			 	print fields
-			 	for n in range(28):
+			 	for n in range(29):
 			 		worksheet.write(col, row+n, *(fields[n]))
 				col += 1
 			xlsxdata.close()
@@ -1046,7 +1048,6 @@ def user_delete(request):
 	if role == 'admin':
 		if request.method == 'POST':
 			uid = request.POST.get('id')
-			print uid
 			try:
 				Users.objects.get(id=uid).delete()
 				return HttpResponse(json.dumps({"msg":"ok"}))
@@ -1063,14 +1064,15 @@ def add_user(request):
 		password = request.POST.get('password')
 		group = request.POST.get('group')
 		area = request.POST.get('area')
+		agent = request.POST.get('agent')
 		note = request.POST.get('note')
 
 		try:
 			user = Users.objects.get(username = username)
 			if user is not None:
 				return HttpResponse(json.dumps({"msg": "already"}))
-		except:
-			user = Users(username = username, password = password, group = group, area = area, note =note)
+		except ObjectDoesNotExist:
+			user = Users(username = username, password = password, group = group, area = area, agent = agent, note =note)
 			user.save()
 			return HttpResponse(json.dumps({"msg": "ok"}))
 	else:
@@ -1278,7 +1280,6 @@ def safefile_delete(request):
 			file = request.POST.get('file')
 			vin = request.POST.get('vin')
 			uid = request.POST.get('uid')
-			print uid
 			try:
 				Uploaded.objects.filter(uid__uid__icontains=uid).get(files=file).delete()
 				return HttpResponse(json.dumps({"msg":"ok"}))
