@@ -24,6 +24,8 @@ class Users(models.Model):
 	group = models.CharField(max_length=50)
 	area = models.CharField(max_length=50)
 	note = models.CharField(max_length=128)
+	# 代理商名称
+	agent = models.CharField(max_length=128, blank=True, null=True)
 
 	def __str__(self):
 		return self.username
@@ -59,7 +61,9 @@ class Orders(models.Model):
 	send_status = models.IntegerField(default=1)
 	# 确认状态 成功为0 失败为1
 	confirm = models.IntegerField(default=1)
-
+	# 代理商名称
+	agent = models.CharField(max_length=50, blank=True, null=True)
+	
 	def __str__(self):
 		return self.onumber
 
@@ -106,6 +110,8 @@ class Safe(models.Model):
 	# 唯一编码号
 	uid = models.CharField(max_length=128, blank=True, null=True)
 	fours = models.CharField(max_length=50, blank=True, null=True)
+	# 代理商名称
+	agent = models.CharField(max_length=50, blank=True, null=True)
 	client_type = models.CharField(max_length=50, blank=True, null=True)
 	client_name = models.CharField(max_length=50, blank=True, null=True)
 	identity_type = models.CharField(max_length=50, blank=True, null=True)
@@ -124,6 +130,8 @@ class Safe(models.Model):
 	care_number = models.CharField(max_length=50, blank=True, null=True)
 	# POS机交易码
 	pos_number = models.CharField(max_length=50, blank=True, null=True)
+	# 设备编号
+	equip_number = models.CharField(max_length=50, blank=True, null=True)
 	#client = models.ForeignKey(Clients)
 	# 销售日期
 	sale_date = models.DateTimeField(auto_now=True)
