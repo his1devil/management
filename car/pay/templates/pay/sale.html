@@ -340,7 +340,7 @@
                     <tr id="taghead">
                       <th>保险单号</th>
                       <th>POS机交易码</th>
-                      <th>代理商名称</th>
+                      <th>4S店名称</th>
                       <th>客户名称</th>
                       <th>移动电话</th>
                       <th>汽车类型</th>
@@ -394,9 +394,9 @@
                   	{% endif %}
                
 
-                  	{% if care.check_status == 1 %}
+                  	{% if care.sale_status == 1 %}
                   	<td class="center" style="color:#cccccc;">打印</td>
-                  	{% elif care.check_status == 0 %}
+                  	{% elif care.sale_status == 0 %}
                   	<td class="center"><button type="button" class="btn btn-info sub btn-xs"  
    onclick="window.open('/print_tpl?id={{ care.uid }}&render=printer','_new')">打印</button></td>
                   	
